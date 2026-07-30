@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+#[Fillable(['key_name', 'key_value', 'algorithm', 'expires_at', 'is_active'])]
+class EncryptionKey extends Model
+{
+    use HasFactory;
+
+    protected $table = 'encryption_keys';
+
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+            'is_active' => 'boolean',
+        ];
+    }
+}
