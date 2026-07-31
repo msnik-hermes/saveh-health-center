@@ -5,19 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RolePermission extends Model
+class AccessReport extends Model
 {
     use HasFactory;
 
-    protected $table = 'role_permissions';
+    protected $table = 'access_reports';
 
     protected $fillable = [
-        'role_id',
-        'permission_id',
-        'is_granted',
+        'user_id',
+        'report_type',
+        'filters',
+        'results',
     ];
 
     protected $casts = [
-        'is_granted' => 'boolean',
+        'filters' => 'array',
+        'results' => 'array',
     ];
 }
