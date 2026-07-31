@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('location', 200);
             $table->decimal('gps_lat', 10, 8)->nullable();
             $table->decimal('gps_lng', 11, 8)->nullable();
-            $table->enum('area_type', ['shahri', 'roostaei', 'sanati']);
-            $table->enum('pest_type', ['mush', 'posh', 'sas', 'soosak', 'kane', 'mar', 'aghrab']);
+            $table->string('area_type')->default('shahri');
+            $table->string('pest_type')->default('mush');
             $table->string('trap_type', 100)->nullable();
             $table->integer('traps_deployed');
             $table->integer('traps_checked')->nullable();

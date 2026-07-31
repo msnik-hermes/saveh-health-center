@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('referring_clinician', 100);
             $table->string('referring_unit', 100);
             $table->text('reason');
-            $table->enum('urgency', ['adii', 'fori', 'orzhans']);
+            $table->string('urgency')->default('adii');
             $table->string('referred_to_facility', 200);
             $table->string('referred_to_specialty', 100)->nullable();
             $table->string('referred_to_clinician', 100)->nullable();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->text('outcome')->nullable();
             $table->boolean('report_received')->nullable();
             $table->date('report_date')->nullable();
-            $table->enum('status', ['ersal_shodeh', 'takmil_shodeh', 'etalaf_peygiri']);
+            $table->string('status')->default('ersal_shodeh');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -38,6 +38,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index('center_id');
+            $table->index('patient_national_code');
             $table->index('referral_date');
             $table->index('status');
         });

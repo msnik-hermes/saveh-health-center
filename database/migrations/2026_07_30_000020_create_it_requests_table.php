@@ -15,15 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->foreignId('requested_by')->constrained('employees')->cascadeOnDelete();
-            $table->enum('service_type', ['tamir_kampooter', 'tamir_printer', 'shabake', 'narmافzar', 'amniyat', 'internet', 'telefon', 'sayer']);
+            $table->string('service_type')->default('tamir_kampooter');
             $table->foreignId('equipment_id')->nullable()->constrained('center_equipment')->nullOnDelete();
             $table->text('problem_description');
             $table->text('error_messages')->nullable();
-            $table->enum('priority', ['adii', 'fori', 'bahrani']);
+            $table->string('priority')->default('adii');
             $table->json('screenshots')->nullable();
             $table->string('available_time', 100)->nullable();
             $table->foreignId('assigned_to')->nullable()->constrained('employees')->nullOnDelete();
-            $table->enum('status', ['ersal_shodeh', 'takhseez_yafteh', 'dar_barresi', 'hal_shodeh', 'red_shodeh']);
+            $table->string('status')->default('ersal_shodeh');
             $table->text('resolution_notes')->nullable();
             $table->date('completion_date')->nullable();
             $table->text('notes')->nullable();

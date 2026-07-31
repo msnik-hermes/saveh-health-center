@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->foreignId('submitted_by')->constrained('employees')->cascadeOnDelete();
             $table->json('form_data');
-            $table->enum('status', ['ersal_shodeh', 'dar_barresi', 'tayeed_shodeh', 'red_shodeh', 'dar_anjam', 'anjam_shodeh', 'laghv_shodeh']);
-            $table->enum('priority', ['adii', 'fori', 'bahrani']);
+            $table->string('status')->default('ersal_shodeh');
+            $table->string('priority')->default('adii');
             $table->foreignId('assigned_to')->nullable()->constrained('employees')->nullOnDelete();
             $table->string('assigned_department', 100)->nullable();
             $table->date('due_date')->nullable();

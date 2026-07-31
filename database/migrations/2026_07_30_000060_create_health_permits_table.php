@@ -14,16 +14,16 @@ return new class extends Migration
         Schema::create('health_permits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('establishment_id')->constrained('environmental_establishments')->cascadeOnDelete();
-            $table->enum('permit_type', ['goahii_behdasht', 'kart_behdasht', 'goahii_ab', 'parvaneh_mahit_zist']);
+            $table->string('permit_type')->default('goahii_behdasht');
             $table->string('permit_number', 50);
             $table->date('issue_date');
             $table->date('expiry_date');
             $table->text('conditions')->nullable();
             $table->string('issuing_authority', 200);
             $table->foreignId('inspector_id')->nullable()->constrained('employees')->nullOnDelete();
-            $table->decimal('fee_paid', 12, 2)->nullable();
+            $table->unsignedBigInteger('fee_paid')->nullable();
             $table->string('payment_reference', 50)->nullable();
-            $table->enum('status', ['faal', 'taliq', 'laghv_shodeh']);
+            $table->string('status')->default('faal');
             $table->text('suspension_reason')->nullable();
             $table->integer('renewal_count')->default(0);
             $table->foreignId('previous_permit_id')->nullable()->constrained('health_permits')->nullOnDelete();

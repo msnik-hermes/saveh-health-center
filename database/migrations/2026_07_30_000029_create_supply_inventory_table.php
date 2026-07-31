@@ -15,15 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->string('item_name', 200);
-            $table->enum('category', ['edari', 'behdashti', 'pezeshki', 'fanni', 'ghazaei', 'nezafati']);
+            $table->string('category')->default('edari');
             $table->integer('current_quantity');
             $table->integer('minimum_quantity');
             $table->string('unit', 50);
-            $table->decimal('unit_cost', 12, 2)->nullable();
+            $table->unsignedBigInteger('unit_cost')->nullable();
             $table->date('last_restock_date')->nullable();
             $table->string('supplier', 200)->nullable();
             $table->string('storage_location', 200)->nullable();
-            $table->enum('status', ['kafi', 'niaz_be_tahvieh', 'tamam_shodeh']);
+            $table->string('status')->default('kafi');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

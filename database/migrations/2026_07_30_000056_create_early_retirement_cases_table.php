@@ -29,11 +29,11 @@ return new class extends Migration
             $table->json('occupational_conditions')->nullable();
             $table->text('medical_assessment')->nullable();
             $table->decimal('impairment_rating', 4, 1)->nullable();
-            $table->enum('eligibility', ['vajed_sharaet', 'namonaseb', 'niaz_be_ettelaat']);
-            $table->enum('recommendation', ['tavsieh', 'taajil', 'red'])->nullable();
+            $table->string('eligibility')->default('vajed_sharaet');
+            $table->string('recommendation')->default('tavsieh')->nullable();
             $table->date('expected_retirement_date')->nullable();
             $table->string('social_security_status', 100)->nullable();
-            $table->enum('case_status', ['darkhast', 'dar_barresi', 'tayeed_shodeh', 'red_shodeh', 'anjam_shodeh']);
+            $table->string('case_status')->default('darkhast');
             $table->date('application_date');
             $table->date('resolution_date')->nullable();
             $table->text('notes')->nullable();

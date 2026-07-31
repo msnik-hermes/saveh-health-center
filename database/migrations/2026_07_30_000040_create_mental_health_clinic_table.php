@@ -19,10 +19,10 @@ return new class extends Migration
             $table->date('first_visit_date');
             $table->date('visit_date');
             $table->foreignId('clinician_id')->nullable()->constrained('employees')->nullOnDelete();
-            $table->enum('service_type', ['arzyabi', 'darman_raftari', 'daroo_darman', 'peygiri', 'orzhans']);
+            $table->string('service_type')->default('arzyabi');
             $table->text('presenting_complaint');
             $table->string('diagnosis_code', 20)->nullable();
-            $table->enum('severity', ['khafif', 'motevaset', 'shadid'])->nullable();
+            $table->string('severity')->default('khafif')->nullable();
             $table->text('treatment_plan')->nullable();
             $table->json('medications')->nullable();
             $table->text('side_effects')->nullable();
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->text('referrals_made')->nullable();
             $table->date('next_appointment')->nullable();
             $table->boolean('consent_on_file')->nullable();
-            $table->enum('status', ['faal', 'khatame_yafteh', 'enteghalyafteh']);
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

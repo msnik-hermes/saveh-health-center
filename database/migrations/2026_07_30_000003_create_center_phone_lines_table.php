@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->string('phone_number', 20);
-            $table->enum('line_type', ['sabit', 'voip', 'mobile', 'fax']);
+            $table->string('line_type')->default('sabit');
             $table->string('provider', 100)->nullable();
             $table->string('bill_id', 50)->nullable();
             $table->string('account_number', 50)->nullable();
-            $table->decimal('monthly_cost', 12, 2)->nullable();
+            $table->unsignedBigInteger('monthly_cost')->nullable();
             $table->string('department', 100)->nullable();
-            $table->enum('status', ['faal', 'qat', 'taaliq'])->default('faal');
+            $table->string('status')->default('faal');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->text('notes')->nullable();
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index('center_id');
+            $table->index('phone_number');
             $table->index('status');
         });
     }

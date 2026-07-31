@@ -14,19 +14,19 @@ return new class extends Migration
         Schema::create('training_materials', function (Blueprint $table) {
             $table->id();
             $table->string('title', 200);
-            $table->enum('type', ['poster', 'brochure', 'takbarg', 'kotchakeh', 'video', 'infographic', 'shabake_ejtemaei', 'radio']);
+            $table->string('type')->default('poster');
             $table->string('category', 100);
             $table->string('target_audience', 200)->nullable();
             $table->string('language', 50)->nullable();
             $table->date('production_date');
             $table->string('designer', 100)->nullable();
             $table->string('reviewer', 100)->nullable();
-            $table->enum('approval_status', ['pishnevis', 'tayeed_shodeh', 'red_shodeh']);
+            $table->string('approval_status')->default('pishnevis');
             $table->integer('print_quantity')->nullable();
             $table->string('digital_format', 50)->nullable();
             $table->string('file_location', 255)->nullable();
             $table->integer('version')->default(1);
-            $table->decimal('cost', 12, 2)->nullable();
+            $table->unsignedBigInteger('cost')->nullable();
             $table->integer('current_stock')->nullable();
             $table->integer('minimum_stock')->nullable();
             $table->text('notes')->nullable();

@@ -10,8 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
     'name', 'slug', 'category', 'description', 'fields_schema', 'target_roles',
-    'target_center_types', 'version', 'is_active', 'created_by',
-    'created_by', 'updated_by',
+    'target_center_types', 'version', 'is_active', 'created_by', 'updated_by',
 ])]
 class FormTemplate extends Model
 {

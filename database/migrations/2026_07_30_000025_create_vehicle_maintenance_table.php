@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('vehicle_id')->constrained('vehicles')->cascadeOnDelete();
             $table->date('service_date');
-            $table->enum('service_type', ['dorei', 'ezterari', 'bazresi']);
+            $table->string('service_type')->default('dorei');
             $table->integer('mileage_at_service');
             $table->text('description');
             $table->json('parts_replaced')->nullable();
             $table->string('service_provider', 200)->nullable();
-            $table->decimal('cost', 12, 2);
+            $table->unsignedBigInteger('cost');
             $table->integer('next_service_mileage')->nullable();
             $table->date('next_service_date')->nullable();
             $table->string('invoice', 255)->nullable();

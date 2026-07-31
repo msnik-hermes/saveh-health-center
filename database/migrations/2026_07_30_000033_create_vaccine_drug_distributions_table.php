@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('transport_method', 100)->nullable();
             $table->boolean('cold_chain_maintained')->nullable();
             $table->json('delivery_receipt')->nullable();
-            $table->enum('status', ['ersal_shodeh', 'tahvil_shodeh', 'marjoo_shodeh']);
+            $table->string('status')->default('ersal_shodeh');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

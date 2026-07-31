@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->string('patient_national_code', 10);
             $table->integer('age');
-            $table->enum('gender', ['mard', 'zan']);
-            $table->enum('screening_type', ['jamiate', 'hadafmand']);
+            $table->string('gender')->default('mard');
+            $table->string('screening_type')->default('jamiate');
             $table->string('target_group', 100)->nullable();
             $table->string('goiter_grade', 20)->nullable();
             $table->decimal('urine_iodine', 8, 2)->nullable();
@@ -37,6 +37,7 @@ return new class extends Migration
 
             $table->index('center_id');
             $table->index('screening_date');
+            $table->index('patient_national_code');
         });
     }
 

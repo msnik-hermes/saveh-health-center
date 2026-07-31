@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('leave_records', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->enum('leave_type', ['salaneh', 'estehghaghee', 'bedoon_hoghough', 'bimari', 'zayman', 'pedari', 'ezdevaj', 'tarehhal', 'amoozeshi', 'haj', 'mamooriat']);
+            $table->string('leave_type')->default('salaneh');
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('days_count');
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->json('attachments')->nullable();
             $table->foreignId('approved_by')->nullable()->constrained('employees')->nullOnDelete();
             $table->date('approval_date')->nullable();
-            $table->enum('status', ['dar_barresi', 'tayeed_shodeh', 'رد_shodeh']);
+            $table->string('status')->default('dar_barresi');
             $table->boolean('substitution_arranged')->default(false);
             $table->foreignId('replacement_id')->nullable()->constrained('employees')->nullOnDelete();
             $table->text('notes')->nullable();

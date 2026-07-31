@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->string('name', 200);
             $table->string('name_english', 200)->nullable();
-            $table->enum('type', ['nanvaiee', 'supermarket', 'clinic', 'darakhoneh', 'restoran', 'arayeshgah', 'estakher', 'hotel', 'karkhaneh', 'other']);
+            $table->string('type')->default('nanvaiee');
             $table->text('address');
             $table->decimal('gps_lat', 10, 8)->nullable();
             $table->decimal('gps_lng', 11, 8)->nullable();
@@ -30,12 +30,12 @@ return new class extends Migration
             $table->date('health_permit_expiry')->nullable();
             $table->integer('employee_count')->nullable();
             $table->string('business_hours', 100)->nullable();
-            $table->enum('risk_category', ['bala', 'motevaset', 'payeen']);
-            $table->enum('compliance_status', ['monaseb', 'namonaseb', 'dar_eslah']);
+            $table->string('risk_category')->default('bala');
+            $table->string('compliance_status')->default('monaseb');
             $table->date('last_inspection_date')->nullable();
             $table->date('next_inspection_due')->nullable();
             $table->json('violations_history')->nullable();
-            $table->enum('status', ['faal', 'pellop', 'taatil']);
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -43,6 +43,8 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index('center_id');
+            $table->index('owner_national_code');
+            $table->index('owner_phone');
             $table->index('status');
             $table->index('compliance_status');
         });

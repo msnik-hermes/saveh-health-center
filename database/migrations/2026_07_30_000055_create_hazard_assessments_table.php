@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('hazard_assessments', function (Blueprint $table) {
             $table->id();
             $table->string('company_name', 200);
-            $table->foreignId('company_id')->nullable();
+            $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
             $table->date('assessment_date');
             $table->string('assessor_name', 100);
             $table->string('assessor_qualifications', 200)->nullable();
@@ -28,8 +28,8 @@ return new class extends Migration
             $table->json('biological_hazards')->nullable();
             $table->json('ergonomic_hazards')->nullable();
             $table->json('psychosocial_hazards')->nullable();
-            $table->enum('risk_category', ['daste_1', 'daste_2', 'daste_3']);
-            $table->enum('overall_risk', ['payeen', 'motevaset', 'bala', 'bahrani']);
+            $table->string('risk_category')->default('daste_1');
+            $table->string('overall_risk')->default('payeen');
             $table->json('control_measures')->nullable();
             $table->text('recommendations')->nullable();
             $table->date('review_date')->nullable();

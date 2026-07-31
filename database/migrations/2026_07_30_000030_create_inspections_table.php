@@ -15,14 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->foreignId('inspector_id')->constrained('employees')->cascadeOnDelete();
-            $table->enum('inspection_type', ['behdashti', 'aymani', 'fanni', 'maali', 'keifi']);
+            $table->string('inspection_type')->default('behdashti');
             $table->date('date');
             $table->text('findings');
-            $table->enum('compliance_status', ['motlob', 'niaz_be_eslah', 'bahrani']);
+            $table->string('compliance_status')->default('motlob');
             $table->json('corrective_actions')->nullable();
             $table->json('images')->nullable();
             $table->date('next_inspection_date')->nullable();
-            $table->enum('status', ['takmil_shodeh', 'dar_barresi']);
+            $table->string('status')->default('takmil_shodeh');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

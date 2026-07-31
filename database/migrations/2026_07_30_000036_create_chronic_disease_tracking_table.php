@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->string('patient_national_code', 10);
             $table->string('patient_name', 100)->nullable();
-            $table->enum('disease_type', ['diabet', 'feshar_khoon', 'bimari_galbi', 'asma', 'saratane', 'sarag']);
+            $table->string('disease_type')->default('diabet');
             $table->date('diagnosis_date');
             $table->string('diagnosis_confirmed_by', 100)->nullable();
             $table->json('current_medications')->nullable();
@@ -28,11 +28,11 @@ return new class extends Migration
             $table->string('blood_pressure', 10)->nullable();
             $table->decimal('bmi', 4, 1)->nullable();
             $table->json('complication_screening')->nullable();
-            $table->enum('control_status', ['kontrol_shodeh', 'kontrol_nashodeh', 'naaghess'])->nullable();
+            $table->string('control_status')->default('kontrol_shodeh')->nullable();
             $table->string('referred_to', 100)->nullable();
             $table->text('treatment_plan')->nullable();
-            $table->enum('adherence_level', ['rezayat_bakhsh', 'narazi', 'naaghess'])->nullable();
-            $table->enum('status', ['faal', 'ghair_faal', 'faut']);
+            $table->string('adherence_level')->default('rezayat_bakhsh')->nullable();
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

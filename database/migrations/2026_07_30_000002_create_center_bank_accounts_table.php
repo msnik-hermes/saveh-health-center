@@ -19,12 +19,12 @@ return new class extends Migration
             $table->string('account_number', 50);
             $table->string('card_number', 20)->nullable();
             $table->string('shaba', 26);
-            $table->enum('account_type', ['jari', 'pas_andaz', 'saborde']);
+            $table->string('account_type')->default('jari');
             $table->string('purpose', 200)->nullable();
             $table->boolean('is_default')->default(false);
-            $table->decimal('balance', 18, 2)->nullable();
+            $table->unsignedBigInteger('balance')->nullable();
             $table->timestamp('last_activity')->nullable();
-            $table->enum('status', ['faal', 'masdood', 'basteh'])->default('faal');
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

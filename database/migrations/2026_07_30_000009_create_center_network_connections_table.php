@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('speed_upload', 8, 2)->nullable();
             $table->string('ip_address', 45)->nullable();
             $table->string('contract_number', 100)->nullable();
-            $table->enum('status', ['faal', 'qat', 'taaliq'])->default('faal');
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

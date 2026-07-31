@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('company_name', 200);
             $table->string('job_title', 100);
             $table->json('hazard_exposures')->nullable();
-            $table->enum('examination_type', ['ghabl_az_estejareh', 'doreei', 'khoroj']);
+            $table->string('examination_type')->default('ghabl_az_estejareh');
             $table->date('examination_date');
             $table->string('physician_name', 100);
             $table->text('vision_result')->nullable();
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->decimal('bmi', 4, 1)->nullable();
             $table->text('physical_findings')->nullable();
             $table->text('abnormalities')->nullable();
-            $table->enum('fit_status', ['motaanaseb', 'mashroot', 'namonaseb']);
+            $table->string('fit_status')->default('motaanaseb');
             $table->text('restrictions')->nullable();
             $table->text('referrals')->nullable();
             $table->date('next_examination_date')->nullable();

@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('company_inspections', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->nullable();
+            $table->foreignId('company_id')->nullable()->constrained('companies')->nullOnDelete();
             $table->string('company_name', 200);
             $table->foreignId('inspector_id')->constrained('employees')->cascadeOnDelete();
-            $table->enum('inspection_type', ['adii', 'peygiri', 'shekaayat', 'barresi']);
+            $table->string('inspection_type')->default('adii');
             $table->date('inspection_date');
             $table->integer('workers_inspected')->nullable();
             $table->text('findings');
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->json('violations')->nullable();
             $table->text('corrective_actions')->nullable();
             $table->date('next_inspection_date')->nullable();
-            $table->enum('status', ['takmil_shodeh', 'dar_barresi', 'peygiri']);
+            $table->string('status')->default('takmil_shodeh');
             $table->json('photos')->nullable();
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
@@ -36,6 +36,7 @@ return new class extends Migration
             $table->index('inspector_id');
             $table->index('inspection_date');
             $table->index('company_name');
+            $table->index('company_id');
         });
     }
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->enum('action', ['create', 'update', 'delete', 'view', 'export', 'login']);
+            $table->string('action')->default('create');
             $table->string('table_name', 100);
             $table->bigInteger('record_id')->nullable();
             $table->json('old_values')->nullable();
@@ -22,7 +22,8 @@ return new class extends Migration
             $table->string('ip_address', 45)->nullable();
             $table->string('user_agent', 500)->nullable();
             $table->string('session_id', 100)->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
+            $table->softDeletes();
 
             $table->index('user_id');
             $table->index('table_name');

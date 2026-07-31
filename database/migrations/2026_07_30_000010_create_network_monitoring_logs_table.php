@@ -20,9 +20,10 @@ return new class extends Migration
             $table->decimal('latency', 8, 2)->nullable();
             $table->decimal('packet_loss', 5, 2)->nullable();
             $table->decimal('uptime_pct', 5, 2)->nullable();
-            $table->enum('status', ['faal', 'qat', 'kond']);
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
+            $table->softDeletes();
 
             $table->index('connection_id');
             $table->index('check_time');

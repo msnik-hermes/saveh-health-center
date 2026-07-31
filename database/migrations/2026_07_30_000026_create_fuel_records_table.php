@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('vehicle_id')->constrained('vehicles')->cascadeOnDelete();
             $table->date('date');
-            $table->enum('fuel_type', ['benzin', 'gaz', 'dizel']);
+            $table->string('fuel_type')->default('benzin');
             $table->decimal('quantity', 6, 1);
-            $table->decimal('cost', 12, 2);
+            $table->unsignedBigInteger('cost');
             $table->string('fuel_card_number', 20)->nullable();
             $table->integer('mileage')->nullable();
             $table->string('station', 200)->nullable();

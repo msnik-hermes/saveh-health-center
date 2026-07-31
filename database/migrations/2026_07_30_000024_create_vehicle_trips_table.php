@@ -26,7 +26,7 @@ return new class extends Migration
             $table->integer('end_mileage')->nullable();
             $table->integer('total_distance')->nullable();
             $table->decimal('fuel_filled', 6, 1)->nullable();
-            $table->decimal('fuel_cost', 12, 2)->nullable();
+            $table->unsignedBigInteger('fuel_cost')->nullable();
             $table->text('passenger_list')->nullable();
             $table->text('trip_purpose');
             $table->text('notes')->nullable();

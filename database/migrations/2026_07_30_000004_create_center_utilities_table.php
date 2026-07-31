@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('center_utilities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
-            $table->enum('utility_type', ['ab', 'barq', 'gaz', 'internet']);
+            $table->string('utility_type')->default('ab');
             $table->string('company', 200);
             $table->string('meter_number', 50)->nullable();
             $table->string('bill_id', 50)->nullable();
@@ -25,8 +25,8 @@ return new class extends Migration
             $table->decimal('avg_consumption', 12, 2)->nullable();
             $table->decimal('peak_consumption', 12, 2)->nullable();
             $table->decimal('offpeak_consumption', 12, 2)->nullable();
-            $table->decimal('monthly_cost', 12, 2)->nullable();
-            $table->enum('payment_status', ['pardakht_shodeh', 'pardakht_nashodeh'])->default('pardakht_nashodeh');
+            $table->unsignedBigInteger('monthly_cost')->nullable();
+            $table->string('payment_status')->default('pardakht_shodeh');
             $table->date('last_reading_date')->nullable();
             $table->date('last_payment_date')->nullable();
             $table->string('last_payment_tracking', 50)->nullable();
@@ -41,7 +41,7 @@ return new class extends Migration
             $table->boolean('internet_vpn')->nullable();
             $table->boolean('has_emergency_power')->default(false);
             $table->foreignId('bank_account_id')->nullable()->constrained('center_bank_accounts')->nullOnDelete();
-            $table->enum('status', ['faal', 'qat', 'taaliq'])->default('faal');
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

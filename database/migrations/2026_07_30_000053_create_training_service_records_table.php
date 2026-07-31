@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->foreignId('material_id')->nullable()->constrained('training_materials')->nullOnDelete();
             $table->date('session_date');
-            $table->enum('session_type', ['kargah', 'seminar', 'jalseh', 'amoozesh_hozoori', 'amoozesh_online']);
+            $table->string('session_type')->default('kargah');
             $table->string('topic', 200);
             $table->string('trainer', 100)->nullable();
             $table->decimal('duration_hours', 4, 1)->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->decimal('evaluation_score', 4, 2)->nullable();
             $table->string('location', 200)->nullable();
             $table->json('photos')->nullable();
-            $table->decimal('cost', 12, 2)->nullable();
+            $table->unsignedBigInteger('cost')->nullable();
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

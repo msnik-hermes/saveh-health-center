@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 200);
             $table->string('slug', 100)->unique();
-            $table->enum('category', ['darkhast_kala', 'darkhast_tasisat', 'darkhast_it', 'darkhast_khadamat', 'gozaresh', 'bazresi', 'behdashti', 'amoozeshi']);
+            $table->string('category')->default('darkhast_kala');
             $table->text('description')->nullable();
             $table->json('fields_schema');
             $table->json('target_roles')->nullable();

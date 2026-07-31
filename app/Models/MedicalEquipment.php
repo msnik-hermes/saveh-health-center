@@ -2,34 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-#[Fillable([
-    'center_id', 'room_id', 'name', 'model', 'manufacturer', 'serial_number',
-    'purchase_date', 'purchase_price', 'warranty_end', 'status',
-    'condition_rating', 'last_maintenance', 'next_maintenance', 'calibration_due',
-    'notes', 'created_by', 'updated_by',
-])]
 class MedicalEquipment extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $table = 'medical_equipment';
 
+    protected $fillable = [
+        'center_id', 'name', 'category', 'brand', 'model',
+        'serial_number', 'asset_code', 'purchase_date', 'purchase_price',
+        'warranty_end', 'location', 'room_id', 'custodian_id',
+        'status', 'last_maintenance', 'next_maintenance',
+        'maintenance_interval_months', 'notes',
+    ];
+
     protected function casts(): array
     {
         return [
-            'purchase_price' => 'decimal:2',
+            'purchase_price' => 'integer',
             'purchase_date' => 'date',
             'warranty_end' => 'date',
             'last_maintenance' => 'date',
             'next_maintenance' => 'date',
-            'calibration_due' => 'date',
-            'condition_rating' => 'integer',
+            'maintenance_interval_months' => 'integer',
         ];
     }
 
@@ -38,8 +38,8 @@ class MedicalEquipment extends Model
         return $this->belongsTo(Center::class);
     }
 
-    public function room(): BelongsTo
+    public function custodian(): BelongsTo
     {
-        return $this->belongsTo(CenterRoom::class, 'room_id');
+        return $this->belongsTo(Employee::class, 'custodian_id');
     }
 }

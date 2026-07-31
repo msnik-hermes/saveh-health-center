@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->foreignId('bank_account_id')->constrained('center_bank_accounts')->cascadeOnDelete();
-            $table->enum('type', ['pardakht_ghebz', 'kharid', 'hoghooq', 'entegal', 'variz', 'kharaneh', 'sayer']);
+            $table->string('type')->default('pardakht_ghebz');
             $table->string('category', 100);
-            $table->decimal('amount', 18, 2);
+            $table->unsignedBigInteger('amount');
             $table->text('description');
             $table->string('reference_number', 100)->nullable();
             $table->string('bill_id', 50)->nullable();
@@ -26,9 +26,9 @@ return new class extends Migration
             $table->foreignId('budget_id')->nullable()->constrained('budgets')->nullOnDelete();
             $table->string('invoice_number', 100)->nullable();
             $table->string('payee_name', 200)->nullable();
-            $table->enum('payment_method', ['entegal_banki', 'chak', 'naqd'])->nullable();
+            $table->string('payment_method')->default('entegal_banki')->nullable();
             $table->date('transaction_date');
-            $table->enum('status', ['anjam_shodeh', 'dar_anjam', 'laghv_shodeh']);
+            $table->string('status')->default('anjam_shodeh');
             $table->foreignId('approved_by')->nullable()->constrained('employees')->nullOnDelete();
             $table->date('approval_date')->nullable();
             $table->json('attachments')->nullable();

@@ -17,8 +17,8 @@ return new class extends Migration
             $table->morphs('notifiable');
             $table->text('data');
             $table->timestamp('read_at')->nullable();
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
 
             $table->index('notifiable_type');
             $table->index('notifiable_id');

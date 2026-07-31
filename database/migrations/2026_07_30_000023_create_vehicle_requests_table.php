@@ -24,7 +24,7 @@ return new class extends Migration
             $table->dateTime('expected_return')->nullable();
             $table->integer('passenger_count')->nullable();
             $table->text('passenger_list')->nullable();
-            $table->enum('status', ['ersal_shodeh', 'tayeed_shodeh', 'dar_safar', 'anjam_shodeh', 'red_shodeh', 'laghv_shodeh']);
+            $table->string('status')->default('ersal_shodeh');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('code', 50)->unique();
             $table->string('name', 200);
-            $table->enum('type', ['khane_behdasht', 'markaz_jame', 'paygah_salamat', 'markaz_behdasht', 'darmangah', 'clinic']);
+            $table->string('type')->default('khane_behdasht');
             $table->foreignId('parent_id')->nullable()->constrained('centers')->nullOnDelete();
             $table->integer('level')->default(1);
             $table->string('university', 200);
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('email', 100)->nullable();
             $table->string('website', 200)->nullable();
             $table->integer('population_served')->nullable();
-            $table->enum('service_area_type', ['shahri', 'roostaei', 'har_do'])->nullable();
+            $table->string('service_area_type')->default('shahri')->nullable();
             $table->decimal('area_sqm', 10, 2)->nullable();
             $table->integer('floors')->nullable();
             $table->integer('rooms_count')->nullable();
@@ -41,8 +41,8 @@ return new class extends Migration
             $table->decimal('generator_power_kw', 8, 2)->nullable();
             $table->boolean('has_fire_system')->default(false);
             $table->boolean('has_cctv')->default(false);
-            $table->enum('building_type', ['melki', 'ejarei', 'dolati'])->nullable();
-            $table->enum('status', ['faal', 'ghair_faal', 'dar_tamir'])->default('faal');
+            $table->string('building_type')->default('melki')->nullable();
+            $table->string('status')->default('faal');
             $table->date('established_date')->nullable();
             $table->string('license_number', 100)->nullable();
             $table->date('license_expiry')->nullable();
@@ -60,6 +60,8 @@ return new class extends Migration
 
             $table->index('type');
             $table->index('status');
+            $table->index('phone');
+            $table->index('email');
             $table->index('parent_id');
             $table->index('province');
             $table->index('city');

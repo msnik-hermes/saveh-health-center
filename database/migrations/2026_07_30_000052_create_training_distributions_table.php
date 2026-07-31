@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('material_id')->constrained('training_materials')->cascadeOnDelete();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->date('distribution_date');
-            $table->enum('distribution_method', ['mostaqeem', 'behvarz', 'madrese', 'karkhaneh', 'rouzad', 'digital']);
+            $table->string('distribution_method')->default('mostaqeem');
             $table->string('distributor', 100)->nullable();
             $table->string('target_group', 100)->nullable();
             $table->integer('quantity');

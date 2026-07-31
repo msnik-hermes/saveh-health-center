@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('pregnant_woman_id')->constrained('pregnant_women')->cascadeOnDelete();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->date('visit_date');
-            $table->enum('visit_type', ['ANC', 'PNC', 'orzhans']);
+            $table->string('visit_type')->default('ANC');
             $table->integer('gestational_week')->nullable();
             $table->decimal('weight', 5, 1)->nullable();
             $table->string('blood_pressure', 10)->nullable();
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->integer('tetanus_dose')->nullable();
             $table->date('next_visit_date')->nullable();
             $table->date('delivery_date')->nullable();
-            $table->enum('delivery_type', ['tabiii', 'sazarian'])->nullable();
+            $table->string('delivery_type')->default('tabiii')->nullable();
             $table->string('delivery_location', 100)->nullable();
             $table->integer('postnatal_visits')->nullable();
             $table->text('pnc_complications')->nullable();

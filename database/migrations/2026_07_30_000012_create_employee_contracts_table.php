@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('employee_contracts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->enum('contract_type', ['rasmi', 'peymani', 'tab_3', 'tab_4', 'peymankari', 'sherkati', 'tahghighi', 'sarbazee', 'madde_32']);
+            $table->string('contract_type')->default('rasmi');
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->integer('renewal_count')->default(0);
             $table->string('salary_grade', 50)->nullable();
             $table->json('benefits')->nullable();
-            $table->enum('insurance_provider', ['sandogh_bazneshasteei', 'tamin_ejtemaei', 'niruha_mosalah', 'sherkati']);
+            $table->string('insurance_provider')->default('sandogh_bazneshasteei');
             $table->date('insurance_start')->nullable();
             $table->string('pension_source', 100)->nullable();
             $table->boolean('convertible_to_permanent')->default(false);
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->json('restrictions')->nullable();
             $table->string('legal_basis', 200)->nullable();
             $table->json('attachments')->nullable();
-            $table->enum('status', ['faal', 'payan_yafteh', 'faskh_shodeh'])->default('faal');
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

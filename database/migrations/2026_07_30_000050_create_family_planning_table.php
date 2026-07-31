@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('living_children');
             $table->integer('pregnancies_count')->nullable();
             $table->integer('desired_family_size')->nullable();
-            $table->enum('current_method', ['tabiii', 'kondom', 'ghorb', 'ampool', 'kasht', 'IUD', 'agheemasazi_mardan', 'agheemasazi_zanan', 'orzhans']);
+            $table->string('current_method')->default('tabiii');
             $table->date('method_start_date');
             $table->json('method_change_history')->nullable();
             $table->text('side_effects')->nullable();
@@ -29,9 +29,9 @@ return new class extends Migration
             $table->integer('counseling_sessions')->nullable();
             $table->date('last_visit_date')->nullable();
             $table->date('next_visit_date')->nullable();
-            $table->enum('pregnancy_status', ['bardar', 'ghair_bardar'])->nullable();
+            $table->string('pregnancy_status')->default('bardar')->nullable();
             $table->string('referred_to', 100)->nullable();
-            $table->enum('status', ['faal', 'ghair_faal', 'bardar']);
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

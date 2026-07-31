@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('patient_national_code', 10);
             $table->string('patient_name', 100)->nullable();
             $table->date('patient_birth_date');
-            $table->enum('patient_gender', ['mard', 'zan']);
-            $table->enum('vaccine_type', ['BCG', 'OPV', 'IPV', 'DPT', 'DT', 'TT', 'Measles', 'MMR', 'HepB', 'HepA', 'Pentavalent', 'Rotavirus', 'Pneumococcal', 'Influenza', 'COVID', 'HPV']);
+            $table->string('patient_gender')->default('mard');
+            $table->string('vaccine_type')->default('BCG');
             $table->integer('dose_number');
             $table->string('vaccine_name', 200);
             $table->string('batch_number', 50)->nullable();
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->text('side_effects')->nullable();
             $table->string('guardian_name', 100)->nullable();
             $table->string('guardian_phone', 15)->nullable();
-            $table->enum('status', ['anjam_shodeh', 'laghv_shodeh', 'aghab_oftadeh']);
+            $table->string('status')->default('anjam_shodeh');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -38,6 +38,7 @@ return new class extends Migration
 
             $table->index('center_id');
             $table->index('patient_national_code');
+            $table->index('guardian_phone');
             $table->index('vaccine_type');
             $table->index('administration_date');
         });

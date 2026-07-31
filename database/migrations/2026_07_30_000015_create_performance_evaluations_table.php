@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
             $table->string('evaluation_period', 20);
-            $table->enum('evaluation_type', ['salaneh', 'faslee', 'sharz']);
+            $table->string('evaluation_type')->default('salaneh');
             $table->foreignId('evaluator_id')->constrained('employees')->cascadeOnDelete();
             $table->decimal('self_score', 4, 2)->nullable();
             $table->decimal('supervisor_score', 4, 2)->nullable();
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->text('training_recommendations')->nullable();
             $table->boolean('promotion_recommendation')->nullable();
             $table->text('comments')->nullable();
-            $table->enum('status', ['pishnevis', 'nahayee', 'tayeed_shodeh']);
+            $table->string('status')->default('pishnevis');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

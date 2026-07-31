@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->string('school_name', 200);
             $table->string('school_code', 20)->nullable();
-            $table->enum('school_type', ['ebtedaei', 'mutevasseh', 'dabirestan']);
+            $table->string('school_type')->default('ebtedaei');
             $table->string('school_location', 200)->nullable();
             $table->integer('student_population')->nullable();
             $table->integer('male_count')->nullable();
             $table->integer('female_count')->nullable();
-            $table->enum('screening_type', ['binaayee', 'shenavaee', 'dandan', 'BMI', 'roshd', 'eskolioz', 'kamkhuni']);
+            $table->string('screening_type')->default('binaayee');
             $table->date('screening_date');
             $table->integer('students_screened');
             $table->integer('vision_problems')->nullable();

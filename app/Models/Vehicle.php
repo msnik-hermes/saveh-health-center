@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'plate_number', 'make', 'model', 'year', 'color', 'vehicle_type',
     'engine_number', 'chassis_number', 'registration_expiry', 'insurance_number',
     'insurance_expiry', 'fuel_type', 'tank_capacity', 'total_mileage',
-    'assigned_driver_id', 'center_id', 'photo', 'status', 'gps_device',
+    'center_id', 'photo', 'status', 'gps_device',
     'notes', 'created_by', 'updated_by',
 ])]
 class Vehicle extends Model
@@ -31,11 +31,6 @@ class Vehicle extends Model
             'tank_capacity' => 'decimal:1',
             'total_mileage' => 'integer',
         ];
-    }
-
-    public function assignedDriver(): BelongsTo
-    {
-        return $this->belongsTo(Driver::class, 'assigned_driver_id');
     }
 
     public function center(): BelongsTo

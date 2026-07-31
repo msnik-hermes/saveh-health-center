@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->dateTime('incident_date');
-            $table->enum('incident_type', ['soroogh', 'takhrab', 'dastresi_ghair_mojaz', 'khoshunat_shoghli', 'basteh_mashkoak', 'khatr_eaymani', 'atash', 'poshtibani_orzhans']);
+            $table->string('incident_type')->default('soroogh');
             $table->string('location', 200);
-            $table->enum('severity', ['1', '2', '3', '4', '5']);
+            $table->string('severity')->default('1');
             $table->text('persons_involved')->nullable();
             $table->text('witnesses')->nullable();
             $table->text('description');
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->text('corrective_actions')->nullable();
             $table->string('follow_up_status', 100)->nullable();
             $table->foreignId('reported_by')->nullable()->constrained('employees')->nullOnDelete();
-            $table->enum('status', ['baz', 'dar_barresi', 'hal_shodeh']);
+            $table->string('status')->default('baz');
             $table->date('resolution_date')->nullable();
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();

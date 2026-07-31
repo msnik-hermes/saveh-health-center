@@ -34,11 +34,11 @@ return new class extends Migration
             $table->text('medical_history')->nullable();
             $table->json('risk_factors')->nullable();
             $table->text('current_medications')->nullable();
-            $table->enum('tetanus_vaccination', ['anjam_shodeh', 'anjam_nashodeh'])->nullable();
+            $table->string('tetanus_vaccination')->default('anjam_shodeh')->nullable();
             $table->boolean('iron_supplementation')->nullable();
             $table->boolean('folic_acid')->nullable();
             $table->integer('anc_visits_count')->nullable();
-            $table->enum('status', ['faal', 'zayman_anjam_shodeh', 'enteghalyafteh', 'sagh']);
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -47,6 +47,7 @@ return new class extends Migration
 
             $table->index('center_id');
             $table->index('national_code');
+            $table->index('phone');
             $table->index('status');
         });
     }

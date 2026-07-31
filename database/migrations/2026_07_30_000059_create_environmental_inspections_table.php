@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('establishment_id')->constrained('environmental_establishments')->cascadeOnDelete();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->foreignId('inspector_id')->constrained('employees')->cascadeOnDelete();
-            $table->enum('inspection_type', ['adii', 'barnamehee', 'shekaayat', 'peygiri', 'ghabl_az_bazgashtayee']);
+            $table->string('inspection_type')->default('adii');
             $table->date('inspection_date');
             $table->integer('personal_hygiene_score')->nullable();
             $table->integer('facility_conditions_score')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->integer('chemical_safety_score')->nullable();
             $table->integer('waste_management_score')->nullable();
             $table->decimal('overall_score', 5, 2);
-            $table->enum('compliance_level', ['monaseb', 'nime_monaseb', 'namonaseb']);
+            $table->string('compliance_level')->default('monaseb');
             $table->integer('critical_violations')->nullable();
             $table->integer('major_violations')->nullable();
             $table->integer('minor_violations')->nullable();
@@ -38,7 +38,7 @@ return new class extends Migration
             $table->json('corrective_actions')->nullable();
             $table->boolean('follow_up_needed')->default(false);
             $table->date('follow_up_date')->nullable();
-            $table->enum('status', ['takmil_shodeh', 'peygiri']);
+            $table->string('status')->default('takmil_shodeh');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

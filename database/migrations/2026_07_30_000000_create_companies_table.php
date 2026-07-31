@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('province', 100)->nullable();
             $table->string('contact_person', 100)->nullable();
             $table->string('contact_phone', 20)->nullable();
-            $table->enum('status', ['faal', 'ghair_faal', 'tahrim'])->default('faal');
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -31,6 +31,8 @@ return new class extends Migration
             $table->index('name');
             $table->index('national_id');
             $table->index('status');
+            $table->index('phone');
+            $table->index('email');
         });
     }
 

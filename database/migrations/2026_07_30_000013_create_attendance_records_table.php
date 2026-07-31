@@ -17,7 +17,7 @@ return new class extends Migration
             $table->date('date');
             $table->time('check_in')->nullable();
             $table->time('check_out')->nullable();
-            $table->enum('status', ['hazer', 'ghayeb', 'morakhasi', 'mamooriat', 'takhir']);
+            $table->string('status')->default('hazer');
             $table->integer('late_minutes')->nullable();
             $table->integer('early_departure_minutes')->nullable();
             $table->decimal('overtime_hours', 5, 2)->nullable();

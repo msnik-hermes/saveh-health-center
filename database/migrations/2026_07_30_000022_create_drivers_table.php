@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('assigned_vehicle_id')->nullable()->constrained('vehicles')->nullOnDelete();
             $table->string('fuel_card_number', 20)->nullable();
             $table->text('driving_record')->nullable();
-            $table->enum('status', ['faal', 'ghair_faal'])->default('faal');
+            $table->string('status')->default('faal');
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
