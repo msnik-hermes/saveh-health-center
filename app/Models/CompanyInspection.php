@@ -37,4 +37,9 @@ class CompanyInspection extends Model
     {
         return $this->belongsTo(Employee::class, 'inspector_id');
     }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

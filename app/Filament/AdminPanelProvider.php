@@ -40,6 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->directory('resources/views/vendor/filament')
             ->resources([
+                \App\Filament\Resources\CompanyResource::class,
                 \App\Filament\Resources\CenterResource::class,
                 \App\Filament\Resources\EmployeeResource::class,
                 \App\Filament\Resources\FacilityRequestResource::class,
