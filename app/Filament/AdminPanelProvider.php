@@ -42,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\HazardAssessmentResource::class,
             ])
             ->pages([
-                Pages\Dashboard::class,
+                \App\Filament\Pages\Dashboard::class,
             ])
             ->widgets([
                 Widgets\AccountWidget::class,
