@@ -15,9 +15,8 @@ class PregnantWomanResource extends Resource
 {
     protected static ?string $model = PregnantWoman::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-heart';
 
-    protected static ?string $navigationGroup = 'خانواده و جمعیت';
+    protected static string | NITENUM | NULL $NAVIGATIONGROUP = 'خانواده و جمعیت';
 
     protected static ?string $navigationLabel = 'مادران باردار';
 

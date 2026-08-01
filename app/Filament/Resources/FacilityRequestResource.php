@@ -16,9 +16,8 @@ class FacilityRequestResource extends Resource
 {
     protected static ?string $model = FacilityRequest::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
-    protected static ?string $navigationGroup = 'امور عمومی';
+    protected static string | NITENUM | NULL $NAVIGATIONGROUP = 'امور عمومی';
 
     protected static ?string $navigationLabel = 'درخواست تاسیسات';
 

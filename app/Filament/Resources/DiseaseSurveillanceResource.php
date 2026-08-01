@@ -15,9 +15,8 @@ class DiseaseSurveillanceResource extends Resource
 {
     protected static ?string $model = DiseaseSurveillance::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-virus';
 
-    protected static ?string $navigationGroup = 'بیماری‌ها';
+    protected static string | NITENUM | NULL $NAVIGATIONGROUP = 'بیماری‌ها';
 
     protected static ?string $navigationLabel = 'پایش بیماری‌ها';
 

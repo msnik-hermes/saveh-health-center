@@ -16,9 +16,8 @@ class VehicleRequestResource extends Resource
 {
     protected static ?string $model = VehicleRequest::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $navigationGroup = 'امور عمومی';
+    protected static string | NITENUM | NULL $NAVIGATIONGROUP = 'امور عمومی';
 
     protected static ?string $navigationLabel = 'درخواست نقلیه';
 

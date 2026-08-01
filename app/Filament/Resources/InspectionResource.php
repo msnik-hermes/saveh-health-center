@@ -16,9 +16,8 @@ class InspectionResource extends Resource
 {
     protected static ?string $model = Inspection::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static ?string $navigationGroup = 'بازرسی‌ها';
+    protected static string | NITENUM | NULL $NAVIGATIONGROUP = 'بازرسی‌ها';
 
     protected static ?string $navigationLabel = 'بازرسی‌های عمومی';
 

@@ -16,9 +16,8 @@ class ItRequestResource extends Resource
 {
     protected static ?string $model = ItRequest::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
 
-    protected static ?string $navigationGroup = 'آی‌تی';
+    protected static string | NITENUM | NULL $NAVIGATIONGROUP = 'آی‌تی';
 
     protected static ?string $navigationLabel = 'درخواست آی‌تی';
 

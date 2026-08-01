@@ -15,9 +15,8 @@ class CompanyInspectionResource extends Resource
 {
     protected static ?string $model = CompanyInspection::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
-    protected static ?string $navigationGroup = 'بهداشت حرفه‌ای';
+    protected static string | NITENUM | NULL $NAVIGATIONGROUP = 'بهداشت حرفه‌ای';
 
     protected static ?string $navigationLabel = 'بازدید شرکت‌ها';
 
