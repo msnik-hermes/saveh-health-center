@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('tracking_number', 50)->unique();
             $table->string('type', 20); // dakhel, kharej
-            $table->foreignId('sender_id')->constrained('employees')->nullOnDelete();
+            $table->foreignId('sender_id')->nullable()->constrained('employees')->nullOnDelete();
             $table->foreignId('receiver_id')->nullable()->constrained('employees')->nullOnDelete();
             $table->foreignId('center_id')->constrained('centers')->cascadeOnDelete();
             $table->string('subject', 255);
@@ -37,8 +37,8 @@ return new class extends Migration
         Schema::create('staff_transfers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->foreignId('from_center_id')->constrained('centers')->nullOnDelete();
-            $table->foreignId('to_center_id')->constrained('centers')->nullOnDelete();
+            $table->foreignId('from_center_id')->nullable()->constrained('centers')->nullOnDelete();
+            $table->foreignId('to_center_id')->nullable()->constrained('centers')->nullOnDelete();
             $table->foreignId('from_unit_id')->nullable()->constrained('organizational_units')->nullOnDelete();
             $table->foreignId('to_unit_id')->nullable()->constrained('organizational_units')->nullOnDelete();
             $table->date('transfer_date');
