@@ -33,4 +33,15 @@ class CompanyResourceTest extends TestCase
         $response = $this->get('/admin/companies/create');
         $response->assertStatus(200);
     }
+
+    public function test_company_resource_edit_page(): void
+    {
+        $this->loginAsAdmin();
+        $company = \App\Models\Company::create([
+            'name' => 'Test Company',
+            'status' => 'active',
+        ]);
+        $response = $this->get('/admin/companies/' . $company->id . '/edit');
+        $response->assertStatus(200);
+    }
 }

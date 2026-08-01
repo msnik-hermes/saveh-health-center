@@ -37,13 +37,22 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\CompanyResource::class,
                 \App\Filament\Resources\CenterResource::class,
                 \App\Filament\Resources\EmployeeResource::class,
+                \App\Filament\Resources\InspectionResource::class,
+                \App\Filament\Resources\CompanyInspectionResource::class,
+                \App\Filament\Resources\HazardAssessmentResource::class,
             ])
             ->pages([
                 Pages\Dashboard::class,
             ])
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                \App\Filament\Widgets\OrganizationStatsWidget::class,
+                \App\Filament\Widgets\EmployeeChartWidget::class,
+                \App\Filament\Widgets\CompanyStatusWidget::class,
+                \App\Filament\Widgets\CenterTypeWidget::class,
+                \App\Filament\Widgets\EmployeeGenderChartWidget::class,
+                \App\Filament\Widgets\ProvinceDistributionWidget::class,
+                \App\Filament\Widgets\RecentActivityWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

@@ -4,157 +4,159 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InspectionResource\Pages;
 use App\Models\Inspection;
-use App\Models\Center;
-use App\Models\Employee;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Schemas\Components\Section;
+use Filament\Actions;
 
 class InspectionResource extends Resource
 {
     protected static ?string $model = Inspection::class;
-
-
-    protected static string | NITENUM | NULL $NAVIGATIONGROUP = 'بازرسی‌ها';
-
-    protected static ?string $navigationLabel = 'بازرسی‌های عمومی';
-
     protected static ?string $modelLabel = 'بازرسی';
-
     protected static ?string $pluralModelLabel = 'بازرسی‌ها';
-
+    protected static ?string $navigationLabel = 'بازرسی‌ها';
     protected static ?string $slug = 'inspections';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('اطلاعات بازرسی')
-                    ->schema([
-                        Forms\Components\Select::make('center_id')
-                            ->label('مرکز')
-                            ->options(fn () => Center::pluck('name', 'id'))
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\Select::make('inspector_id')
-                            ->label('بازرس')
-                            ->options(fn () => Employee::pluck('last_name', 'id'))
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\Select::make('inspection_type')
-                            ->label('نوع بازرسی')
-                            ->options([
-                                'بهداشتی' => 'بهداشتی',
-                                'ایمنی' => 'ایمنی',
-                                'فنی' => 'فنی',
-                                'مالی' => 'مالی',
-                                'کیفی' => 'کیفی',
-                            ])
-                            ->required(),
-                        Forms\Components\DatePicker::make('date')
-                            ->label('تاریخ بازرسی')
-                            ->required(),
-                    ])->columns(2),
+        return $schema->schema([
+            Section::make('اطلاعات بازرسی')
+                ->schema([
+                    Forms\Components\Select::make('center_id')
+                        ->label('مرکز')
+                        ->relationship('center', 'name')
+                        ->required()
+                        ->searchable(),
+                    Forms\Components\Select::make('inspector_id')
+                        ->label('بازرس')
+                        ->relationship('inspector', 'first_name')
+                        ->searchable(),
+                    Forms\Components\Select::make('inspection_type')
+                        ->label('نوع بازرسی')
+                        ->options([
+                            'behdashti' => 'بهداشتی',
+                            'amniati' => 'امنیتی',
+                            'fanghi' => 'فنی',
+                            'ghanooni' => 'قانونی',
+                        ])
+                        ->default('behdashti')
+                        ->required(),
+                    Forms\Components\DatePicker::make('date')
+                        ->label('تاریخ بازرسی')
+                        ->required(),
+                ])->columns(2),
 
-                Forms\Components\Section::make('یافته‌ها و وضعیت')
-                    ->schema([
-                        Forms\Components\Textarea::make('findings')
-                            ->label('یافته‌ها')
-                            ->rows(3)
-                            ->required(),
-                        Forms\Components\Select::make('compliance_status')
-                            ->label('وضعیت انطباق')
-                            ->options([
-                                'مطلوب' => 'مطلوب',
-                                'نیاز_به_اصلاح' => 'نیاز به اصلاح',
-                                'بحرانی' => 'بحرانی',
-                            ])
-                            ->required(),
-                        Forms\Components\Textarea::make('notes')
-                            ->label('یادداشت‌ها')
-                            ->rows(2),
-                    ])->columns(1),
+            Section::make('یافته‌ها و نتایج')
+                ->schema([
+                    Forms\Components\Textarea::make('findings')
+                        ->label('یافته‌ها')
+                        ->required()
+                        ->rows(4),
+                    Forms\Components\Select::make('compliance_status')
+                        ->label('وضعیت انطباق')
+                        ->options([
+                            'motlob' => 'مطلوب',
+                            'naghiz' => 'ناقص',
+                            'ghair_motlob' => 'غیر مطلوب',
+                        ])
+                        ->default('motlob'),
+                    Forms\Components\Textarea::make('corrective_actions')
+                        ->label('اقدامات اصلاحی')
+                        ->rows(3),
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت‌ها')
+                        ->rows(3),
+                ])->columns(2),
 
-                Forms\Components\Section::make('پیگیری')
-                    ->schema([
-                        Forms\Components\DatePicker::make('next_inspection_date')
-                            ->label('بازرسی بعدی'),
-                        Forms\Components\Select::make('status')
-                            ->label('وضعیت')
-                            ->options([
-                                'تکمیل_شده' => 'تکمیل شده',
-                                'در_حال_بررسی' => 'در حال بررسی',
-                            ])
-                            ->default('تکمیل_شده')
-                            ->required(),
-                    ])->columns(2),
-            ]);
+            Section::make('برنامه‌ریزی')
+                ->schema([
+                    Forms\Components\DatePicker::make('next_inspection_date')
+                        ->label('تاریخ بازدید بعدی'),
+                    Forms\Components\Select::make('status')
+                        ->label('وضعیت')
+                        ->options([
+                            'takmil_shodeh' => 'تکمیل شده',
+                            'dar_jaryan' => 'در جریان',
+                            'laghv_shodeh' => 'لغو شده',
+                        ])
+                        ->default('takmil_shodeh')
+                        ->required(),
+                ])->columns(2),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->label('شماره'),
                 Tables\Columns\TextColumn::make('center.name')
                     ->label('مرکز')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('inspector.last_name')
-                    ->label('بازرس'),
                 Tables\Columns\TextColumn::make('inspection_type')
                     ->label('نوع')
-                    ->badge(),
-                Tables\Columns\TextColumn::make('date')
-                    ->label('تاریخ')
-                    ->date('Y/m/d')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('compliance_status')
-                    ->label('وضعیت انطباق')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'مطلوب' => 'success',
-                        'نیاز_به_اصلاح' => 'warning',
-                        'بحرانی' => 'danger',
+                        'behdashti' => 'success',
+                        'amniati' => 'danger',
+                        'fanghi' => 'warning',
+                        'ghanooni' => 'info',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'behdashti' => 'بهداشتی',
+                        'amniati' => 'امنیتی',
+                        'fanghi' => 'فنی',
+                        'ghanooni' => 'قانونی',
+                        default => $state,
+                    }),
+                Tables\Columns\TextColumn::make('date')
+                    ->label('تاریخ')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('compliance_status')
+                    ->label('انطباق')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'motlob' => 'success',
+                        'naghiz' => 'warning',
+                        'ghair_motlob' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'motlob' => 'مطلوب',
+                        'naghiz' => 'ناقص',
+                        'ghair_motlob' => 'غیر مطلوب',
+                        default => $state,
                     }),
                 Tables\Columns\TextColumn::make('status')
                     ->label('وضعیت')
-                    ->badge(),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('inspection_type')
-                    ->label('نوع بازرسی')
-                    ->options([
-                        'بهداشتی' => 'بهداشتی',
-                        'ایمنی' => 'ایمنی',
-                        'فنی' => 'فنی',
-                        'مالی' => 'مالی',
-                        'کیفی' => 'کیفی',
-                    ]),
-                Tables\Filters\SelectFilter::make('compliance_status')
-                    ->label('وضعیت انطباق')
-                    ->options([
-                        'مطلوب' => 'مطلوب',
-                        'نیاز_به_اصلاح' => 'نیاز به اصلاح',
-                        'بحرانی' => 'بحرانی',
-                    ]),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'takmil_shodeh' => 'success',
+                        'dar_jaryan' => 'warning',
+                        'laghv_shodeh' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'takmil_shodeh' => 'تکمیل شده',
+                        'dar_jaryan' => 'در جریان',
+                        'laghv_shodeh' => 'لغو شده',
+                        default => $state,
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [];
     }
 
     public static function getPages(): array
