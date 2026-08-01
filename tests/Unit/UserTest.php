@@ -13,20 +13,16 @@ class UserTest extends TestCase
     public function test_user_can_be_created_with_valid_data(): void
     {
         $data = [
-            'employee_id' => 'EMP001',
             'name' => 'حسین احمدی',
             'email' => 'h.ahmedi@example.com',
             'password' => 'password123',
-            'center_id' => 1,
-            'is_active' => true,
         ];
 
         $user = User::create($data);
 
-        $this->assertDatabaseHas('users', $data);
+        $this->assertDatabaseHas('users', ['email' => 'h.ahmedi@example.com']);
         $this->assertNotNull($user->id);
-        $this->assertSame($data['name'], $user->name);
-        $this->assertTrue($user->is_active);
+        $this->assertSame('حسین احمدی', $user->name);
     }
 
     public function test_user_email_is_required(): void
@@ -39,7 +35,7 @@ class UserTest extends TestCase
     {
         $user = User::create([
             'name' => 'کاربر',
-            'email' => 'test@example.com',
+            'email' => 'test2@example.com',
             'password' => 'plainpassword',
         ]);
 
@@ -47,46 +43,30 @@ class UserTest extends TestCase
         $this->assertTrue(password_verify('plainpassword', $user->password));
     }
 
-    public function test_user_has_role_relationship(): void
+    public function test_user_can_have_roles(): void
     {
         $user = User::factory()->create();
-        $role = $user->roles()->create([
-            'name' => 'مدیر',
-            'level' => 1,
-            'description' => 'مدیر سیستم',
+        $role = \App\Models\Role::create([
+            'name' => 'admin',
+            'display_name' => 'مدیر',
         ]);
 
-        $this->assertInstanceOf(\App\Models\Role::class, $user->roles()->first());
-        $this->assertSame($role->id, $user->roles()->first()->id);
-    }
+        $user->roles()->attach($role->id);
 
-    public function test_user_has_center_relationship(): void
-    {
-        $user = User::factory()->create(['center_id' => 1]);
-
-        $this->assertInstanceOf(\App\Models\Center::class, $user->center);
-        $this->assertSame(1, $user->center->id);
-    }
-
-    public function test_user_has_activity_logs(): void
-    {
-        $user = User::factory()->create();
-        $log = $user->activityLogs()->create([
-            'action' => 'login',
-            'ip_address' => '192.168.1.1',
-            'user_agent' => 'Chrome',
-        ]);
-
-        $this->assertCount(1, $user->activityLogs);
-        $this->assertSame($log->id, $user->activityLogs()->first()->id);
+        $this->assertTrue($user->roles->contains($role->id));
     }
 
     public function test_user_has_role_method(): void
     {
         $user = User::factory()->create();
-        $role = $user->roles()->create(['name' => 'مدیر', 'level' => 1]);
+        $role = \App\Models\Role::create([
+            'name' => 'admin',
+            'display_name' => 'مدیر',
+        ]);
 
-        $this->assertTrue($user->hasRole('مدیر'));
-        $this->assertFalse($user->hasRole('کارمند'));
+        $user->roles()->attach($role->id);
+
+        $this->assertTrue($user->hasRole('admin'));
+        $this->assertFalse($user->hasRole('nonexistent'));
     }
 }

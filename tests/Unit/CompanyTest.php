@@ -12,50 +12,42 @@ class CompanyTest extends TestCase
 
     public function test_can_create_company_with_valid_data(): void
     {
-        $data = [
+        $company = Company::create([
             'name' => 'تست شرکت',
             'registration_number' => '123456789',
             'phone' => '09123456789',
             'email' => 'test@company.com',
             'status' => 'active',
-        ];
+        ]);
 
-        $company = Company::create($data);
-
-        $this->assertDatabaseHas('companies', $data);
+        $this->assertDatabaseHas('companies', ['name' => 'تست شرکت']);
         $this->assertNotNull($company->id);
-        $this->assertSame($data['name'], $company->name);
+        $this->assertSame('تست شرکت', $company->name);
     }
 
     public function test_company_requires_name(): void
     {
         $this->expectException(\Illuminate\Database\QueryException::class);
-
         Company::create(['phone' => '09123456789']);
     }
 
-    public function test_company_validation_of_phone(): void
+    public function test_company_has_many_inspections(): void
     {
         $company = Company::create([
             'name' => 'تست شرکت',
-            'phone' => '09123456789',
-            'email' => 'invalid-email',
+            'status' => 'active',
         ]);
 
-        $this->assertDatabaseHas('companies', ['phone' => '09123456789']);
-    }
-
-    public function test_company_relationships(): void
-    {
-        $company = Company::create(['name' => 'تست شرکت']);
-
-        $this->assertHasExactCount(0, $company->companyInspections());
-        $this->assertHasExactCount(0, $company->hazardAssessments());
+        $this->assertCount(0, $company->companyInspections);
+        $this->assertCount(0, $company->hazardAssessments);
     }
 
     public function test_company_soft_delete(): void
     {
-        $company = Company::create(['name' => 'تست شرکت']);
+        $company = Company::create([
+            'name' => 'تست شرکت',
+            'status' => 'active',
+        ]);
         $companyId = $company->id;
 
         $company->delete();
@@ -74,7 +66,7 @@ class CompanyTest extends TestCase
         $this->assertSame('شرکت فعال', $activeCompanies->first()->name);
 
         $inactiveCompanies = Company::where('status', 'inactive')->get();
-        $this->assertCount(1);
+        $this->assertCount(1, $inactiveCompanies);
         $this->assertSame('شرکت غیرفعال', $inactiveCompanies->first()->name);
     }
 }

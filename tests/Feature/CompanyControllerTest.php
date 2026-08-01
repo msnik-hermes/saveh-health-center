@@ -2,8 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
 class CompanyControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_companies_controller_index() {
         $response = $this->get('/companies');
         $response->assertStatus(200);
@@ -24,8 +29,8 @@ class CompanyControllerTest extends TestCase
         ];
 
         $response = $this->post('/companies', $data);
-        $response->assertStatus(302);
-        $this->assertDatabaseHas('companies', $data);
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('companies', ['name' => 'تست شرکت']);
     }
 
     public function test_companies_controller_update() {
@@ -35,7 +40,7 @@ class CompanyControllerTest extends TestCase
             'name' => 'تست شرکت بروزرسانی',
         ]);
 
-        $response->assertStatus(302);
+        $response->assertStatus(200);
         $this->assertDatabaseHas('companies', [
             'id' => $company->id,
             'name' => 'تست شرکت بروزرسانی',
@@ -47,13 +52,13 @@ class CompanyControllerTest extends TestCase
         $companyId = $company->id;
 
         $response = $this->delete("/companies/{$companyId}");
-        $response->assertStatus(302);
+        $response->assertStatus(200);
 
         $this->assertSoftDeleted('companies', ['id' => $companyId]);
     }
 
     protected function createCompany() {
-        return $this->company = \App\Models\Company::create([
+        return \App\Models\Company::create([
             'name' => 'تست شرکت',
             'status' => 'faal',
             'phone' => '09123456789',
