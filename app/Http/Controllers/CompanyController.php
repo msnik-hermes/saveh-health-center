@@ -3,55 +3,129 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class CompanyController extends Controller
 {
-    public function index(): JsonResponse
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): Response
     {
-        $companies = Company::all();
-        return response()->json(['data' => $companies]);
+        $perPage = $request->input('per_page', 15);
+        $page = $request->input('page', 1);
+
+        $companies = Company::paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'data' => $companies->items(),
+            'meta' => [
+                'current_page' => $companies->currentPage(),
+                'last_page' => $companies->lastPage(),
+                'per_page' => $companies->perPage(),
+                'total' => $companies->total(),
+            ]
+        ], 200);
     }
 
-    public function show(Company $company): JsonResponse
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): Response
     {
-        return response()->json(['data' => $company]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'registration_number' => 'required|string|max:100',
+                'national_id' => 'required|string|max:20',
+                'phone' => 'nullable|string|max:20',
+                'email' => 'nullable|email|max:255',
+                'address' => 'nullable|string',
+                'city' => 'nullable|string|max:100',
+                'province' => 'nullable|string|max:100',
+                'status' => 'required|string|in:active,inactive',
+            ]);
+
+            $company = Company::create($validated);
+
+            return response()->json([
+                'success' => true,
+                'data' => $company,
+                'message' => 'شرکت با موفقیت ایجاد شد'
+            ], 201);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در اعتبارسی داده‌ها',
+                'errors' => $e->errors()
+            ], 422);
+        }
     }
 
-    public function store(Request $request): JsonResponse
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id): Response
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'registration_number' => 'nullable|string|unique:companies,registration_number',
-            'national_id' => 'nullable|string|unique:companies,national_id',
-            'status' => 'nullable|string|max:50',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-        ]);
+        $company = Company::findOrFail($id);
 
-        $company = Company::create($data);
-
-        return response()->json(['data' => $company], 201);
+        return response()->json([
+            'success' => true,
+            'data' => $company
+        ], 200);
     }
 
-    public function update(Request $request, Company $company): JsonResponse
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id): Response
     {
-        $data = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'status' => 'sometimes|nullable|string|max:50',
-        ]);
+        $company = Company::findOrFail($id);
 
-        $company->update($data);
+        try {
+            $validated = $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'registration_number' => 'nullable|string|max:100|unique:companies,registration_number,'.$id.',',
+                'national_id' => 'nullable|string|max:20|unique:companies,national_id,'.$id.',',
+                'phone' => 'nullable|string|max:20',
+                'email' => 'nullable|email|max:255',
+                'address' => 'nullable|string',
+                'city' => 'nullable|string|max:100',
+                'province' => 'nullable|string|max:100',
+                'status' => 'nullable|string|in:active,inactive',
+            ]);
 
-        return response()->json(['data' => $company]);
+            $company->update($validated);
+
+            return response()->json([
+                'success' => true,
+                'data' => $company->fresh(),
+                'message' => 'شرکت با موفقیت به روز رسانی شد'
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در اعتبارسی داده‌ها',
+                'errors' => $e->errors()
+            ], 422);
+        }
     }
 
-    public function destroy(Company $company): JsonResponse
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id): Response
     {
+        $company = Company::findOrFail($id);
         $company->delete();
 
-        return response()->json(['message' => 'Company deleted successfully']);
+        return response()->json([
+            'success' => true,
+            'message' => 'شرکت با موفقیت حذف شد'
+        ], 200);
     }
 }
