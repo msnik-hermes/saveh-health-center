@@ -3,52 +3,55 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserPermission;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Gate;
 
 class UserPermissionController extends Controller
 {
-    public function index(): Response
+    public function index(): JsonResponse
     {
         $permissions = UserPermission::with(['user', 'permission'])->get();
-        return response()->json(['user_permissions' => $permissions]);
+        return response()->json(['data' => $permissions]);
     }
 
-    public function show(UserPermission $permission): Response
+    public function show(UserPermission $userPermission): JsonResponse
     {
-        return response()->json(['user_permission' => $permission]);
+        return response()->json(['data' => $userPermission->load(['user', 'permission'])]);
     }
 
-    public function store(Request $request): Response
+    public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
             'user_id' => 'required|exists:users,id',
             'permission_id' => 'required|exists:permissions,id',
             'is_granted' => 'required|boolean',
+            'granted_by' => 'required|exists:users,id',
+            'expires_at' => 'nullable|date|after:today',
+            'reason' => 'nullable|string|max:500',
         ]);
 
         $permission = UserPermission::create($data);
 
-        return response()->json(['user_permission' => $permission], 201);
+        return response()->json(['data' => $permission->load(['user', 'permission'])], 201);
     }
 
-    public function update(Request $request, UserPermission $permission): Response
+    public function update(Request $request, UserPermission $userPermission): JsonResponse
     {
         $data = $request->validate([
-            'is_granted' => 'sometimes|required|boolean',
+            'is_granted' => 'sometimes|boolean',
+            'expires_at' => 'nullable|date|after:today',
+            'reason' => 'nullable|string|max:500',
         ]);
 
-        $permission->update($data);
+        $userPermission->update($data);
 
-        return response()->json(['user_permission' => $permission]);
+        return response()->json(['data' => $userPermission->load(['user', 'permission'])]);
     }
 
-    public function destroy(UserPermission $permission): Response
+    public function destroy(UserPermission $userPermission): JsonResponse
     {
-        Gate::authorize('delete', $permission);
-        $permission->delete();
+        $userPermission->delete();
 
         return response()->json(['message' => 'User permission deleted successfully']);
     }

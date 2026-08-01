@@ -3,43 +3,44 @@
 namespace App\Http\Controllers;
 
 use App\Models\Center;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Gate;
 
 class CenterController extends Controller
 {
-    public function index(): Response
+    public function index(): JsonResponse
     {
         $centers = Center::all();
-        return response()->json(['centers' => $centers]);
+        return response()->json(['data' => $centers]);
     }
 
-    public function show(Center $center): Response
+    public function show(Center $center): JsonResponse
     {
-        return response()->json(['center' => $center]);
+        return response()->json(['data' => $center]);
     }
 
-    public function store(Request $request): Response
+    public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|unique:centers,code',
             'type' => 'required|in:hospital,clinic,pharmacy,lab',
-            'address' => 'nullable|string',
+            'university' => 'required|string|max:200',
+            'province' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
+            'address' => 'required|string',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
-            'manager_id' => 'nullable|exists:users,id',
             'status' => 'required|in:active,inactive,suspended',
         ]);
 
         $center = Center::create($data);
 
-        return response()->json(['center' => $center], 201);
+        return response()->json(['data' => $center], 201);
     }
 
-    public function update(Request $request, Center $center): Response
+    public function update(Request $request, Center $center): JsonResponse
     {
         $data = $request->validate([
             'name' => 'sometimes|required|string|max:255',
@@ -48,12 +49,11 @@ class CenterController extends Controller
 
         $center->update($data);
 
-        return response()->json(['center' => $center]);
+        return response()->json(['data' => $center]);
     }
 
-    public function destroy(Center $center): Response
+    public function destroy(Center $center): JsonResponse
     {
-        Gate::authorize('delete', $center);
         $center->delete();
 
         return response()->json(['message' => 'Center deleted successfully']);

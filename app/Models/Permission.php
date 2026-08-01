@@ -6,32 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Permission extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $table = 'permissions';
 
     protected $fillable = [
         'name',
-        'slug',
-        'module',
-        'action',
+        'display_name',
         'description',
-        'access_level_id',
-        'requires_approval',
+        'table_name',
+        'action',
     ];
-
-    protected $casts = [
-        'requires_approval' => 'boolean',
-    ];
-
-    public function accessLevel(): BelongsTo
-    {
-        return $this->belongsTo(AccessLevel::class);
-    }
 
     public function roles(): BelongsToMany
     {

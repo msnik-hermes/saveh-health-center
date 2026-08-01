@@ -9,60 +9,65 @@ class CompanyControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_companies_controller_index() {
-        $response = $this->get('/companies');
+    public function test_companies_index(): void
+    {
+        $response = $this->getJson('/api/companies');
         $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
     }
 
-    public function test_companies_controller_show() {
+    public function test_companies_show(): void
+    {
         $company = $this->createCompany();
-        $response = $this->get("/companies/{$company->id}");
+        $response = $this->getJson("/api/companies/{$company->id}");
         $response->assertStatus(200);
+        $response->assertJson(['data' => ['name' => 'تست شرکت']]);
     }
 
-    public function test_companies_controller_store() {
-        $data = [
-            'name' => 'تست شرکت',
-            'status' => 'faal',
-            'phone' => '09123456789',
-            'email' => 'test@example.com',
-        ];
+    public function test_companies_store(): void
+    {
+        $data = ['name' => 'شرکت جدید', 'status' => 'active'];
 
-        $response = $this->post('/companies', $data);
+        $response = $this->postJson('/api/companies', $data);
         $response->assertStatus(201);
-        $this->assertDatabaseHas('companies', ['name' => 'تست شرکت']);
+        $this->assertDatabaseHas('companies', ['name' => 'شرکت جدید']);
     }
 
-    public function test_companies_controller_update() {
+    public function test_companies_store_requires_name(): void
+    {
+        $response = $this->postJson('/api/companies', []);
+        $response->assertStatus(422);
+    }
+
+    public function test_companies_update(): void
+    {
         $company = $this->createCompany();
 
-        $response = $this->put("/companies/{$company->id}", [
-            'name' => 'تست شرکت بروزرسانی',
+        $response = $this->putJson("/api/companies/{$company->id}", [
+            'name' => 'شرکت بروزرسانی',
         ]);
-
         $response->assertStatus(200);
         $this->assertDatabaseHas('companies', [
             'id' => $company->id,
-            'name' => 'تست شرکت بروزرسانی',
+            'name' => 'شرکت بروزرسانی',
         ]);
     }
 
-    public function test_companies_controller_destroy() {
+    public function test_companies_destroy(): void
+    {
         $company = $this->createCompany();
         $companyId = $company->id;
 
-        $response = $this->delete("/companies/{$companyId}");
+        $response = $this->deleteJson("/api/companies/{$companyId}");
         $response->assertStatus(200);
-
         $this->assertSoftDeleted('companies', ['id' => $companyId]);
     }
 
-    protected function createCompany() {
+    protected function createCompany()
+    {
         return \App\Models\Company::create([
             'name' => 'تست شرکت',
-            'status' => 'faal',
-            'phone' => '09123456789',
-            'email' => 'test@example.com',
+            'status' => 'active',
         ]);
     }
 }
