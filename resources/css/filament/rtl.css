@@ -1,90 +1,33 @@
 @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
 
-html[dir="rtl"] body {
+html[dir='rtl'] body {
     font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
 }
 
-html[dir="rtl"] {
+html[dir='rtl'] {
     direction: rtl;
     text-align: right;
 }
 
-html[dir="rtl"] .fi-sidebar {
-    border-right: none;
-    border-left: 1px solid var(--fi-sidebar-border-color);
-}
-
-html[dir="rtl"] .fi-main {
-    margin-left: auto;
-    margin-right: var(--fi-sidebar-width);
-}
-
-html[dir="rtl"] .fi-table-cell {
-    text-align: right;
-}
-
-html[dir="rtl"] .fi-input-wrp {
-    direction: rtl;
-    text-align: right;
-}
-
-html[dir="rtl"] .fi-btn-label {
+/* Do not force layout margins — Filament v5 manages sidebar layout itself */
+html[dir='rtl'] .fi-sidebar-item-label,
+html[dir='rtl'] .fi-sidebar-group-label,
+html[dir='rtl'] .fi-header-heading,
+html[dir='rtl'] .fi-btn-label,
+html[dir='rtl'] .fi-ta-header-cell,
+html[dir='rtl'] .fi-ta-cell {
     font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
-}
-
-html[dir="rtl"] .fi-modal-header {
     text-align: right;
 }
 
-html[dir="rtl"] .fi-page-header {
-    direction: rtl;
-    text-align: right;
-}
-
-html[dir="rtl"] .fi-breadcrumbs-item {
-    font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
-}
-
-html[dir="rtl"] .fi-badge {
-    font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
-}
-
-/* Ensure all Filament components use RTL layout */
-html[dir="rtl"] .fi-fo-field-wrp,
-html[dir="rtl"] .fi-fo-field-wrp-label,
-html[dir="rtl"] .fi-fo-field-wrp-helper,
-html[dir="rtl"] .fi-fo-field-wrp-error {
-    text-align: right;
-    direction: rtl;
-}
-
-/* Navigation RTL */
-html[dir="rtl"] .fi-sidebar-nav-item {
-    direction: rtl;
-}
-
-html[dir="rtl"] .fi-tenant-menu {
-    direction: rtl;
-}
-
-/* Tables RTL */
-html[dir="rtl"] .fi-ta-cell {
-    text-align: right;
-}
-
-html[dir="rtl"] .fi-ta-header-cell {
-    text-align: right;
-}
-
-/* Forms RTL */
-html[dir="rtl"] input[type="text"],
-html[dir="rtl"] input[type="email"],
-html[dir="rtl"] input[type="number"],
-html[dir="rtl"] input[type="password"],
-html[dir="rtl"] input[type="tel"],
-html[dir="rtl"] input[type="url"],
-html[dir="rtl"] textarea,
-html[dir="rtl"] select {
+html[dir='rtl'] input[type='text'],
+html[dir='rtl'] input[type='email'],
+html[dir='rtl'] input[type='number'],
+html[dir='rtl'] input[type='password'],
+html[dir='rtl'] input[type='tel'],
+html[dir='rtl'] input[type='url'],
+html[dir='rtl'] textarea,
+html[dir='rtl'] select {
     text-align: right;
     direction: rtl;
 }

@@ -25,3 +25,11 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Temp / generated debug artifacts
+serve.log
+/storage/app/*.html
+/storage/app/*.txt
+/storage/app/models_meta.json
+/storage/app/generated_resources.json
+/storage/app/generated_resources_v2.json

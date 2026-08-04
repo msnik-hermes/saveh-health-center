@@ -2,13 +2,13 @@
 
 namespace App\Filament\Pages;
 
+use BackedEnum;
 use Filament\Pages;
+use Filament\Support\Icons\Heroicon;
 
 class Dashboard extends Pages\Dashboard
 {
-    protected static ?string $navigationIcon = 'heroicon-o-home';
-
-    protected static string $view = 'filament.pages.dashboard';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHome;
 
     public function getTitle(): string
     {

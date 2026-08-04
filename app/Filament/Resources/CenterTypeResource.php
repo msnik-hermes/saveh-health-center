@@ -2,41 +2,78 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Support\Icons\Heroicon;
+
+use App\Filament\Resources\CenterTypeResource\Pages;
 use App\Models\CenterType;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Components\Integer as IntegerComponent;
-use Filament\Forms\Components\TextInput as TextInputComponent;
-use Filament\Forms\Components\Toggle as ToggleComponent;
-use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Actions;
+use Illuminate\Database\Eloquent\Builder;
 
 class CenterTypeResource extends Resource
 {
     protected static ?string $model = CenterType::class;
+
     protected static ?string $modelLabel = 'نوع مرکز';
+
     protected static ?string $pluralModelLabel = 'انواع مرکز';
+
     protected static ?string $navigationLabel = 'انواع مرکز';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'سازمان';
+
+    protected static string|\BackedEnum|null $navigationIcon = Heroicon::Tag;
+
+    protected static ?int $navigationSort = 120;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return true;
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->schema([
-            Forms\Components\TextInput::make('name')
-                ->label('نام نوع')
-                ->required()
-                ->maxLength(100),
-            Forms\Components\TextInput::make('description')
-                ->label('توضیحات')
-                ->maxLength(500),
-            Forms\Components\Integer::make('capacity')
-                ->label('ظرفیت')
-                ->min(0)
-                ->nullable(),
-            Forms\Components\Toggle::make('is_active')
-                ->label('فعال')
-                ->default(true),
+            Section::make('اطلاعات اصلی')
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('نام')
+                        ->required()
+                        ->maxLength(255),
+                ])
+                ->columns(2)
+                ->collapsible(),
+            Section::make('توضیحات')
+                ->schema([
+                    Forms\Components\Textarea::make('description')
+                        ->label('توضیحات')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ])
+                ->columns(2)
+                ->collapsible(),
+            Section::make('اطلاعات تماس و مکان')
+                ->schema([
+                    Forms\Components\TextInput::make('capacity')
+                        ->label('ظرفیت')
+                        ->numeric()
+                        ->maxLength(255),
+                ])
+                ->columns(2)
+                ->collapsible(),
+            Section::make('وضعیت و نوع')
+                ->schema([
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('فعال')
+                        ->default(false),
+                ])
+                ->columns(2)
+                ->collapsible(),
         ]);
     }
 
@@ -47,14 +84,23 @@ class CenterTypeResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('نام')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('فعال')
+                    ->boolean()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('توضیحات')
-                    ->limit(100),
-                Tables\Columns\IntegerColumn::make('capacity')
-                    ->label('ظرفیت'),
-                Tables\Columns\ToggleColumn::make('is_active')
-                    ->label('فعال'),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('capacity')
+                    ->label('ظرفیت')
+                    ->toggleable(),
+            ])
+            ->filters([
+                Tables\Filters\TernaryFilter::make('is_active')->label('فعال'),
             ])
             ->actions([
                 Actions\EditAction::make(),
@@ -64,7 +110,8 @@ class CenterTypeResource extends Resource
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('id', 'desc');
     }
 
     public static function getPages(): array
@@ -74,5 +121,10 @@ class CenterTypeResource extends Resource
             'create' => Pages\CreateCenterType::route('/create'),
             'edit' => Pages\EditCenterType::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->latest('id');
     }
 }

@@ -1,0 +1,17 @@
+/* Saveh Health Center — design tokens (trust-first clinical calm)
+   Accent: forest teal | Neutrals: bone + ink | Motion: premium ease
+*/
+
+:root {
+    --shc-bg: #fbfaf7;
+    --shc-bg-elevated: #ffffff;
+    --shc-ink: #2c3530;
+    --shc-ink-muted: #5d7166;
+    --shc-accent: #2d6b4b;
+    --shc-accent-deep: #1a392b;
+    --shc-signal: #c47b2d;
+    --shc-border: rgb(44 53 48 / 0.08);
+    --shc-radius-lg: 1.75rem;
+    --shc-radius-md: 1rem;
+    --shc-shadow: 0 18px 50px -28px rgb(13 31 23 / 0.45);
+}
