@@ -40,10 +40,13 @@ class VehicleRequestResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -53,22 +56,10 @@ class VehicleRequestResource extends Resource
                         ->preload()
                         ->native(false)
                         ->required(),
-                    Forms\Components\Select::make('requested_by')
-                        ->label('درخواست‌کننده')
-                        ->relationship(name: 'requestedBy', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('vehicle_id')
-                        ->label('خودرو')
-                        ->relationship(name: 'vehicle', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Vehicle $record) => (string) (($record->plate_number ?? null) ?: ($record->name ?? null) ?: ($record->model ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
                     Forms\Components\Select::make('driver_id')
                         ->label('راننده')
                         ->relationship(name: 'driver', titleAttribute: 'id')
@@ -77,52 +68,39 @@ class VehicleRequestResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
+                    Forms\Components\Select::make('requested_by')
+                        ->label('درخواست‌کننده')
+                        ->relationship(name: 'requestedBy', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
+                    Forms\Components\Select::make('vehicle_id')
+                        ->label('خودرو')
+                        ->relationship(name: 'vehicle', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Vehicle $record) => (string) (($record->plate_number ?? null) ?: ($record->name ?? null) ?: ($record->model ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('مکان و تماس')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
                 ->schema([
-                    Forms\Components\TextInput::make('trip_purpose')
-                        ->label('trip purpose')
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('origin')
                         ->label('مبدأ')
                         ->maxLength(255),
                     Forms\Components\TextInput::make('destination')
                         ->label('مقصد')
                         ->maxLength(255),
-                    Forms\Components\DateTimePicker::make('expected_return')
-                        ->label('expected return')
-                        ->native(false)
-                        ->seconds(false),
-                    Forms\Components\TextInput::make('passenger_count')
-                        ->label('passenger count')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('passenger_list')
-                        ->label('passenger list')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DateTimePicker::make('departure_datetime')
-                        ->label('departure datetime')
-                        ->native(false)
-                        ->seconds(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
@@ -130,19 +108,42 @@ class VehicleRequestResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
+                    Forms\Components\TextInput::make('trip_purpose')
+                        ->label('trip purpose')
+                        ->maxLength(255),
+                ]),
+            Section::make('تاریخ‌ها')
                 ->columns(2)
-                ->collapsible(),
+                ->schema([
+                    Forms\Components\DateTimePicker::make('departure_datetime')
+                        ->label('departure datetime')
+                        ->native(false)
+                        ->seconds(false),
+                    Forms\Components\DateTimePicker::make('expected_return')
+                        ->label('expected return')
+                        ->native(false)
+                        ->seconds(false),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\TextInput::make('passenger_count')
+                        ->label('passenger count')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('passenger_list')
+                        ->label('passenger list')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -186,12 +187,12 @@ class VehicleRequestResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('departure_datetime')
                     ->label('departure datetime')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

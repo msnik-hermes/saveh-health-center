@@ -39,10 +39,13 @@ class WorkOrderResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -52,6 +55,10 @@ class WorkOrderResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
                     Forms\Components\Select::make('facility_request_id')
                         ->label('facility request')
                         ->relationship(name: 'facilityRequest', titleAttribute: 'id')
@@ -60,49 +67,13 @@ class WorkOrderResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('order_number')
-                        ->label('order number')
-                        ->maxLength(255),
-                    Forms\Components\Select::make('assigned_technician')
-                        ->label('assigned technician')
-                        ->relationship(name: 'assignedTechnician', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Textarea::make('materials_used')
-                        ->label('materials used')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\Textarea::make('before_photos')
-                        ->label('before photos')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\Textarea::make('after_photos')
-                        ->label('after photos')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\Toggle::make('supervisor_approval')
-                        ->label('supervisor approval')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('category')
                         ->label('دسته')
@@ -122,11 +93,50 @@ class WorkOrderResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
                 ->schema([
+                    Forms\Components\TextInput::make('cost')
+                        ->label('هزینه')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('description')
+                        ->label('توضیحات')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\Textarea::make('after_photos')
+                        ->label('after photos')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\Select::make('assigned_technician')
+                        ->label('assigned technician')
+                        ->relationship(name: 'assignedTechnician', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Textarea::make('before_photos')
+                        ->label('before photos')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\DateTimePicker::make('completion_time')
+                        ->label('completion time')
+                        ->native(false)
+                        ->seconds(false),
                     Forms\Components\TextInput::make('location_building')
                         ->label('location building')
                         ->maxLength(255),
@@ -137,45 +147,22 @@ class WorkOrderResource extends Resource
                     Forms\Components\TextInput::make('location_room')
                         ->label('location room')
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('description')
-                        ->label('توضیحات')
+                    Forms\Components\Textarea::make('materials_used')
+                        ->label('materials used')
                         ->rows(3)
                         ->columnSpanFull(),
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
+                    Forms\Components\TextInput::make('order_number')
+                        ->label('order number')
+                        ->maxLength(255),
                     Forms\Components\DateTimePicker::make('start_time')
                         ->label('start time')
                         ->native(false)
                         ->seconds(false),
-                    Forms\Components\DateTimePicker::make('completion_time')
-                        ->label('completion time')
-                        ->native(false)
-                        ->seconds(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('cost')
-                        ->label('هزینه')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\Toggle::make('supervisor_approval')
+                        ->label('supervisor approval')
+                        ->default(false),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -221,7 +208,7 @@ class WorkOrderResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

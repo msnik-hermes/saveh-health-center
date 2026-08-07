@@ -6,7 +6,6 @@ use App\Models\Center;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\FacilityRequest;
-use App\Models\Inspection;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -29,10 +28,6 @@ class OrganizationStatsWidget extends StatsOverviewWidget
                 ->description('واحدهای تحت پوشش')
                 ->descriptionIcon('heroicon-m-briefcase')
                 ->color('warning'),
-            Stat::make('بازرسی‌ها', (string) Inspection::query()->count())
-                ->description('کل رکوردهای بازرسی')
-                ->descriptionIcon('heroicon-m-clipboard-document-check')
-                ->color('info'),
             Stat::make('درخواست تاسیسات', (string) FacilityRequest::query()->count())
                 ->description('کل درخواست‌ها')
                 ->descriptionIcon('heroicon-m-wrench-screwdriver')

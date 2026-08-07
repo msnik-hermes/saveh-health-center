@@ -38,22 +38,14 @@ class ApprovalRequestResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('workflow_id')
-                        ->label('گردش‌کار')
-                        ->relationship(name: 'workflow', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\ApprovalWorkflow $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\TextInput::make('target_id')
-                        ->label('target')
-                        ->maxLength(255),
                     Forms\Components\Select::make('requester_id')
                         ->label('درخواست‌دهنده')
                         ->relationship(name: 'requester', titleAttribute: 'id')
@@ -62,58 +54,63 @@ class ApprovalRequestResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('target_type')
-                        ->label('target type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                    Forms\Components\TextInput::make('target_id')
+                        ->label('target')
+                        ->maxLength(255),
+                    Forms\Components\Select::make('workflow_id')
+                        ->label('گردش‌کار')
+                        ->relationship(name: 'workflow', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\ApprovalWorkflow $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
+                        ->preload()
                         ->native(false)
                         ->nullable(),
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(1)
+                ->schema([
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
                         ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('current_step')
-                        ->label('مرحله فعلی')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\Textarea::make('approvals')
-                        ->label('approvals')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(1)
                 ->schema([
                     Forms\Components\DateTimePicker::make('completed_at')
                         ->label('completed at')
                         ->native(false)
                         ->seconds(false),
-                ])
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\Textarea::make('approvals')
+                        ->label('approvals')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('current_step')
+                        ->label('مرحله فعلی')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Select::make('target_type')
+                        ->label('target type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -155,12 +152,12 @@ class ApprovalRequestResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('completed_at')
                     ->label('completed at')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

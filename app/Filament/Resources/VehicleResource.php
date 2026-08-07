@@ -37,98 +37,23 @@ class VehicleResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\TextInput::make('plate_number')
-                        ->label('پلاک')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('make')
-                        ->label('make')
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('model')
                         ->label('مدل')
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('color')
-                        ->label('رنگ')
+                    Forms\Components\TextInput::make('plate_number')
+                        ->label('پلاک')
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('engine_number')
-                        ->label('شماره موتور')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('insurance_number')
-                        ->label('شماره بیمه')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('photo')
-                        ->label('photo')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\TextInput::make('year')
-                        ->label('سال')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\DatePicker::make('registration_expiry')
-                        ->label('registration expiry')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('insurance_expiry')
-                        ->label('insurance expiry')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('vehicle_type')
-                        ->label('vehicle type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\TextInput::make('chassis_number')
-                        ->label('شماره شاسی')
-                        ->maxLength(255),
-                    Forms\Components\Select::make('fuel_type')
-                        ->label('نوع سوخت')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('status')
-                        ->label('وضعیت')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('tank_capacity')
-                        ->label('tank capacity')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('gps_device')
-                        ->label('gps device')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('total_mileage')
-                        ->label('total mileage')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -146,19 +71,81 @@ class VehicleResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Select::make('status')
+                        ->label('وضعیت')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\TextInput::make('chassis_number')
+                        ->label('شماره شاسی')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('color')
+                        ->label('رنگ')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('engine_number')
+                        ->label('شماره موتور')
+                        ->maxLength(255),
+                    Forms\Components\Select::make('fuel_type')
+                        ->label('نوع سوخت')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('gps_device')
+                        ->label('gps device')
+                        ->maxLength(255),
+                    Forms\Components\DatePicker::make('insurance_expiry')
+                        ->label('insurance expiry')
+                        ->native(false),
+                    Forms\Components\TextInput::make('insurance_number')
+                        ->label('شماره بیمه')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('make')
+                        ->label('make')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('photo')
+                        ->label('photo')
+                        ->maxLength(255),
+                    Forms\Components\DatePicker::make('registration_expiry')
+                        ->label('registration expiry')
+                        ->native(false),
+                    Forms\Components\TextInput::make('tank_capacity')
+                        ->label('tank capacity')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('total_mileage')
+                        ->label('total mileage')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Select::make('vehicle_type')
+                        ->label('vehicle type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('year')
+                        ->label('سال')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -201,7 +188,7 @@ class VehicleResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

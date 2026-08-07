@@ -37,11 +37,18 @@ class EmployeeContractResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
                     Forms\Components\Select::make('employee_id')
                         ->label('کارمند')
                         ->relationship(name: 'employee', titleAttribute: 'id')
@@ -50,35 +57,23 @@ class EmployeeContractResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('contract_type')
-                        ->label('نوع قرارداد')
-                        ->options(['official' => 'رسمی', 'contract' => 'قراردادی', 'corporate' => 'شرکتی', 'conscript' => 'طرحی', 'temporary' => 'موقت', 'volunteer' => 'داوطلب'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
                         ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(2)
                 ->schema([
                     Forms\Components\DatePicker::make('start_date')
                         ->label('تاریخ شروع')
@@ -86,67 +81,64 @@ class EmployeeContractResource extends Resource
                     Forms\Components\DatePicker::make('end_date')
                         ->label('تاریخ پایان')
                         ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\TextInput::make('renewal_count')
-                        ->label('renewal count')
-                        ->numeric()
-                        ->maxLength(255),
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\Textarea::make('attachments')
+                        ->label('attachments')
+                        ->rows(3)
+                        ->columnSpanFull(),
                     Forms\Components\Textarea::make('benefits')
                         ->label('مزایا')
                         ->rows(3)
                         ->columnSpanFull(),
+                    Forms\Components\Select::make('contract_type')
+                        ->label('نوع قرارداد')
+                        ->options(['official' => 'رسمی', 'contract' => 'قراردادی', 'corporate' => 'شرکتی', 'conscript' => 'طرحی', 'temporary' => 'موقت', 'volunteer' => 'داوطلب'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Toggle::make('convertible_to_permanent')
+                        ->label('convertible to permanent')
+                        ->default(false),
                     Forms\Components\TextInput::make('insurance_provider')
                         ->label('insurance provider')
                         ->maxLength(255),
                     Forms\Components\DatePicker::make('insurance_start')
                         ->label('insurance start')
                         ->native(false),
+                    Forms\Components\TextInput::make('legal_basis')
+                        ->label('legal basis')
+                        ->maxLength(255),
                     Forms\Components\TextInput::make('pension_source')
                         ->label('pension source')
                         ->maxLength(255),
-                    Forms\Components\Toggle::make('convertible_to_permanent')
-                        ->label('convertible to permanent')
-                        ->default(false),
-                    Forms\Components\TextInput::make('service_region')
-                        ->label('service region')
+                    Forms\Components\TextInput::make('renewal_count')
+                        ->label('renewal count')
+                        ->numeric()
                         ->maxLength(255),
                     Forms\Components\Textarea::make('restrictions')
                         ->label('محدودیت‌ها')
                         ->rows(3)
                         ->columnSpanFull(),
-                    Forms\Components\TextInput::make('legal_basis')
-                        ->label('legal basis')
-                        ->maxLength(255),
-                    Forms\Components\Textarea::make('attachments')
-                        ->label('attachments')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
                     Forms\Components\TextInput::make('salary_grade')
                         ->label('salary grade')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\TextInput::make('service_region')
+                        ->label('service region')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -171,12 +163,12 @@ class EmployeeContractResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('تاریخ شروع')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('end_date')
                     ->label('تاریخ پایان')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('renewal_count')
@@ -193,7 +185,7 @@ class EmployeeContractResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

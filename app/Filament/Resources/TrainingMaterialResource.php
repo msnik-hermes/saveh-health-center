@@ -36,108 +36,21 @@ class TrainingMaterialResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('title')
                         ->label('عنوان')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('target_audience')
-                        ->label('target audience')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('language')
-                        ->label('زبان')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('designer')
-                        ->label('designer')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('reviewer')
-                        ->label('reviewer')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('version')
-                        ->label('نسخه')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('type')
-                        ->label('نوع')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('category')
-                        ->label('دسته')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('approval_status')
-                        ->label('approval status')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DatePicker::make('production_date')
-                        ->label('production date')
-                        ->native(false),
-                    Forms\Components\TextInput::make('digital_format')
-                        ->label('digital format')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('print_quantity')
-                        ->label('print quantity')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('cost')
-                        ->label('هزینه')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('current_stock')
-                        ->label('current stock')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('minimum_stock')
-                        ->label('minimum stock')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('file_location')
-                        ->label('file location')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\TextInput::make('created_by')
                         ->label('ایجادکننده')
@@ -147,10 +60,92 @@ class TrainingMaterialResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
+                ]),
+            Section::make('وضعیت و نوع')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\Select::make('category')
+                        ->label('دسته')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('type')
+                        ->label('نوع')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\DatePicker::make('production_date')
+                        ->label('production date')
+                        ->native(false),
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('cost')
+                        ->label('هزینه')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\Select::make('approval_status')
+                        ->label('approval status')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('current_stock')
+                        ->label('current stock')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('designer')
+                        ->label('designer')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('digital_format')
+                        ->label('digital format')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('file_location')
+                        ->label('file location')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('language')
+                        ->label('زبان')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('minimum_stock')
+                        ->label('minimum stock')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('print_quantity')
+                        ->label('print quantity')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('reviewer')
+                        ->label('reviewer')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('target_audience')
+                        ->label('target audience')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('version')
+                        ->label('نسخه')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -180,7 +175,7 @@ class TrainingMaterialResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('production_date')
                     ->label('production date')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('designer')
@@ -195,7 +190,7 @@ class TrainingMaterialResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -37,19 +37,14 @@ class VehicleMaintenanceResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('vehicle_id')
-                        ->label('خودرو')
-                        ->relationship(name: 'vehicle', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Vehicle $record) => (string) (($record->plate_number ?? null) ?: ($record->name ?? null) ?: ($record->model ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\TextInput::make('created_by')
                         ->label('ایجادکننده')
                         ->numeric()
@@ -58,21 +53,17 @@ class VehicleMaintenanceResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DatePicker::make('service_date')
-                        ->label('تاریخ خدمت')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('next_service_date')
-                        ->label('next service date')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                    Forms\Components\Select::make('vehicle_id')
+                        ->label('خودرو')
+                        ->relationship(name: 'vehicle', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Vehicle $record) => (string) (($record->plate_number ?? null) ?: ($record->name ?? null) ?: ($record->model ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Select::make('service_type')
                         ->label('نوع خدمت')
@@ -80,32 +71,27 @@ class VehicleMaintenanceResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
+                ]),
+            Section::make('تاریخ‌ها')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
                 ->schema([
-                    Forms\Components\DatePicker::make('mileage_at_service')
-                        ->label('mileage at service')
+                    Forms\Components\DatePicker::make('next_service_date')
+                        ->label('next service date')
                         ->native(false),
-                    Forms\Components\Textarea::make('parts_replaced')
-                        ->label('parts replaced')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\TextInput::make('service_provider')
-                        ->label('service provider')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('next_service_mileage')
-                        ->label('next service mileage')
+                    Forms\Components\DatePicker::make('service_date')
+                        ->label('تاریخ خدمت')
+                        ->native(false),
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('cost')
+                        ->label('هزینه')
                         ->numeric()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('invoice')
-                        ->label('invoice')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('description')
                         ->label('توضیحات')
@@ -115,19 +101,29 @@ class VehicleMaintenanceResource extends Resource
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
                 ->schema([
-                    Forms\Components\TextInput::make('cost')
-                        ->label('هزینه')
+                    Forms\Components\TextInput::make('invoice')
+                        ->label('invoice')
+                        ->maxLength(255),
+                    Forms\Components\DatePicker::make('mileage_at_service')
+                        ->label('mileage at service')
+                        ->native(false),
+                    Forms\Components\TextInput::make('next_service_mileage')
+                        ->label('next service mileage')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\Textarea::make('parts_replaced')
+                        ->label('parts replaced')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('service_provider')
+                        ->label('service provider')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -143,7 +139,7 @@ class VehicleMaintenanceResource extends Resource
                     ->label('تاریخ خدمت')
                     ->searchable()
                     ->sortable()
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('service_type')
@@ -153,7 +149,7 @@ class VehicleMaintenanceResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('mileage_at_service')
                     ->label('mileage at service')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('description')
@@ -173,7 +169,7 @@ class VehicleMaintenanceResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

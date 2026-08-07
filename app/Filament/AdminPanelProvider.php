@@ -11,14 +11,12 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
-use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -49,19 +47,12 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarFullyCollapsibleOnDesktop(false)
             ->collapsibleNavigationGroups(false)
             ->sidebarWidth('19rem')
-            ->renderHook(
-                PanelsRenderHook::HEAD_START,
-                fn (): string => Blade::render('@include("filament.hooks.force-sidebar-open")'),
-            )
             // IMPORTANT (Filament rule): group icons OR item icons, not both.
             // We keep icons on each menu item and leave groups label-only.
             ->navigationGroups([
                 NavigationGroup::make('سازمان')->collapsed(false)->collapsible(false),
                 NavigationGroup::make('منابع انسانی')->collapsed(false)->collapsible(false),
                 NavigationGroup::make('پشتیبانی و ناوگان')->collapsed(false)->collapsible(false),
-                NavigationGroup::make('سلامت خانواده')->collapsed(false)->collapsible(false),
-                NavigationGroup::make('سلامت و درمان')->collapsed(false)->collapsible(false),
-                NavigationGroup::make('بازرسی و ایمنی')->collapsed(false)->collapsible(false),
                 NavigationGroup::make('مالی و انبار')->collapsed(false)->collapsible(false),
                 NavigationGroup::make('آموزش')->collapsed(false)->collapsible(false),
                 NavigationGroup::make('فرم‌ها')->collapsed(false)->collapsible(false),

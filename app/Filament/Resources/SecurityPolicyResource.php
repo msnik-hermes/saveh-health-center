@@ -36,10 +36,13 @@ class SecurityPolicyResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(2)
                 ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('نام')
@@ -48,14 +51,24 @@ class SecurityPolicyResource extends Resource
                     Forms\Components\TextInput::make('slug')
                         ->label('شناسه یکتا')
                         ->maxLength(255),
-                    Forms\Components\Textarea::make('rules')
-                        ->label('rules')
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('فعال')
+                        ->default(false),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('description')
+                        ->label('توضیحات')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
                 ->schema([
                     Forms\Components\Select::make('policy_type')
                         ->label('policy type')
@@ -63,22 +76,12 @@ class SecurityPolicyResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Toggle::make('is_active')
-                        ->label('فعال')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('description')
-                        ->label('توضیحات')
+                    Forms\Components\Textarea::make('rules')
+                        ->label('rules')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -110,7 +113,7 @@ class SecurityPolicyResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -37,19 +37,14 @@ class FuelRecordResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('vehicle_id')
-                        ->label('خودرو')
-                        ->relationship(name: 'vehicle', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Vehicle $record) => (string) (($record->plate_number ?? null) ?: ($record->name ?? null) ?: ($record->model ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\TextInput::make('created_by')
                         ->label('ایجادکننده')
                         ->numeric()
@@ -58,69 +53,66 @@ class FuelRecordResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                    Forms\Components\Select::make('vehicle_id')
+                        ->label('خودرو')
+                        ->relationship(name: 'vehicle', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Vehicle $record) => (string) (($record->plate_number ?? null) ?: ($record->name ?? null) ?: ($record->model ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(1)
                 ->schema([
                     Forms\Components\DatePicker::make('date')
                         ->label('تاریخ')
                         ->native(false),
-                ])
+                ]),
+            Section::make('مالی و مقادیر')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
                 ->schema([
+                    Forms\Components\TextInput::make('cost')
+                        ->label('هزینه')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('quantity')
+                        ->label('تعداد')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('fuel_card_number')
+                        ->label('fuel card number')
+                        ->maxLength(255),
                     Forms\Components\Select::make('fuel_type')
                         ->label('نوع سوخت')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('quantity')
-                        ->label('تعداد')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('cost')
-                        ->label('هزینه')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('fuel_card_number')
-                        ->label('fuel card number')
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('mileage')
                         ->label('mileage')
                         ->numeric()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('station')
-                        ->label('station')
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('receipt_number')
                         ->label('receipt number')
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\TextInput::make('station')
+                        ->label('station')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -131,7 +123,7 @@ class FuelRecordResource extends Resource
                     ->label('تاریخ')
                     ->searchable()
                     ->sortable()
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('vehicle.plate_number')
@@ -164,7 +156,7 @@ class FuelRecordResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

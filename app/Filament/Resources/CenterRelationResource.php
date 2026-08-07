@@ -37,10 +37,47 @@ class CenterRelationResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
-            Section::make('اطلاعات اصلی')
+        return $schema
+            ->columns(1)
+            ->schema([
+            Section::make('ارتباطات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('updated_by')
+                        ->label('ویرایش‌کننده')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\DatePicker::make('valid_from')
+                        ->label('valid from')
+                        ->native(false),
+                    Forms\Components\DatePicker::make('valid_to')
+                        ->label('valid to')
+                        ->native(false),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('description')
+                        ->label('توضیحات')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id_1')
                         ->label('center 1')
@@ -58,53 +95,14 @@ class CenterRelationResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\DatePicker::make('valid_from')
-                        ->label('valid from')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('valid_to')
-                        ->label('valid to')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
                     Forms\Components\Select::make('relation_type')
                         ->label('نوع رابطه')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('description')
-                        ->label('توضیحات')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('ارتباطات')
-                ->schema([
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('updated_by')
-                        ->label('ویرایش‌کننده')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -131,12 +129,12 @@ class CenterRelationResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('valid_from')
                     ->label('valid from')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('valid_to')
                     ->label('valid to')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('notes')
@@ -150,7 +148,7 @@ class CenterRelationResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

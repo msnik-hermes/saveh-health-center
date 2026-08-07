@@ -38,53 +38,18 @@ class OfficialCorrespondenceResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('tracking_number')
-                        ->label('tracking number')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('subject')
-                        ->label('موضوع')
-                        ->maxLength(255),
-                    Forms\Components\Textarea::make('attachments')
-                        ->label('attachments')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('type')
-                        ->label('نوع')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('priority')
-                        ->label('اولویت')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'urgent' => 'فوری'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('status')
-                        ->label('وضعیت')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('sender_id')
-                        ->label('sender')
-                        ->relationship(name: 'sender', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                    Forms\Components\Select::make('center_id')
+                        ->label('مرکز')
+                        ->relationship(name: 'center', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -97,18 +62,49 @@ class OfficialCorrespondenceResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Select::make('center_id')
-                        ->label('مرکز')
-                        ->relationship(name: 'center', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                    Forms\Components\Select::make('sender_id')
+                        ->label('sender')
+                        ->relationship(name: 'sender', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                ])
+                ]),
+            Section::make('وضعیت و نوع')
                 ->columns(2)
-                ->collapsible(),
+                ->schema([
+                    Forms\Components\Select::make('priority')
+                        ->label('اولویت')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'urgent' => 'فوری'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('status')
+                        ->label('وضعیت')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('type')
+                        ->label('نوع')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\DatePicker::make('receive_date')
+                        ->label('receive date')
+                        ->native(false),
+                    Forms\Components\DatePicker::make('send_date')
+                        ->label('send date')
+                        ->native(false),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('body')
                         ->label('متن')
@@ -118,21 +114,22 @@ class OfficialCorrespondenceResource extends Resource
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
                 ->schema([
-                    Forms\Components\DatePicker::make('send_date')
-                        ->label('send date')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('receive_date')
-                        ->label('receive date')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\Textarea::make('attachments')
+                        ->label('attachments')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('subject')
+                        ->label('موضوع')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('tracking_number')
+                        ->label('tracking number')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -182,7 +179,7 @@ class OfficialCorrespondenceResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

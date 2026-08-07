@@ -37,10 +37,13 @@ class CenterBankAccountResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -58,76 +61,70 @@ class CenterBankAccountResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('bank_name')
-                        ->label('نام بانک')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('branch_name')
-                        ->label('شعبه')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('account_number')
-                        ->label('شماره حساب')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('card_number')
-                        ->label('شماره کارت')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('shaba')
-                        ->label('shaba')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('purpose')
-                        ->label('هدف')
-                        ->maxLength(255),
-                    Forms\Components\DateTimePicker::make('last_activity')
-                        ->label('last activity')
-                        ->native(false)
-                        ->seconds(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('account_type')
-                        ->label('account type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Toggle::make('is_default')
-                        ->label('پیش‌فرض')
-                        ->default(false),
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
                         ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('مالی و مقادیر')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('balance')
                         ->label('مانده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\TextInput::make('account_number')
+                        ->label('شماره حساب')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Select::make('account_type')
+                        ->label('account type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('bank_name')
+                        ->label('نام بانک')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('branch_name')
+                        ->label('شعبه')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('card_number')
+                        ->label('شماره کارت')
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('is_default')
+                        ->label('پیش‌فرض')
+                        ->default(false),
+                    Forms\Components\DateTimePicker::make('last_activity')
+                        ->label('last activity')
+                        ->native(false)
+                        ->seconds(false),
+                    Forms\Components\TextInput::make('purpose')
+                        ->label('هدف')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('shaba')
+                        ->label('shaba')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -170,7 +167,7 @@ class CenterBankAccountResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

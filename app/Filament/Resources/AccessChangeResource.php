@@ -37,10 +37,13 @@ class AccessChangeResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Select::make('user_id')
                         ->label('کاربر')
@@ -50,11 +53,16 @@ class AccessChangeResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
                 ->schema([
+                    Forms\Components\Select::make('change_type')
+                        ->label('change type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
                     Forms\Components\Select::make('changed_by')
                         ->label('changed by')
                         ->relationship(name: 'changedBy', titleAttribute: 'id')
@@ -63,36 +71,18 @@ class AccessChangeResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('old_value')
-                        ->label('old value')
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('new_value')
                         ->label('new value')
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('change_type')
-                        ->label('change type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
+                    Forms\Components\TextInput::make('old_value')
+                        ->label('old value')
+                        ->maxLength(255),
                     Forms\Components\Textarea::make('reason')
                         ->label('دلیل')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -125,7 +115,7 @@ class AccessChangeResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

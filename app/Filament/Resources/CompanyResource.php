@@ -36,59 +36,50 @@ class CompanyResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(2)
                 ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('نام')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('registration_number')
-                        ->label('شماره ثبت')
+                    Forms\Components\TextInput::make('email')
+                        ->label('ایمیل')
+                        ->email()
                         ->maxLength(255),
-                    Forms\Components\Toggle::make('contact_person')
-                        ->label('contact person')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('ارتباطات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('national_id')
                         ->label('کد ملی')
                         ->maxLength(255),
-                ])
+                ]),
+            Section::make('مکان و تماس')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
                 ->schema([
-                    Forms\Components\TextInput::make('phone')
-                        ->label('تلفن')
-                        ->tel()
+                    Forms\Components\TextInput::make('province')
+                        ->label('استان')
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('email')
-                        ->label('ایمیل')
-                        ->email()
+                    Forms\Components\TextInput::make('city')
+                        ->label('شهر')
                         ->maxLength(255),
                     Forms\Components\Textarea::make('address')
                         ->label('آدرس')
                         ->rows(3)
                         ->columnSpanFull(),
-                    Forms\Components\TextInput::make('city')
-                        ->label('شهر')
+                    Forms\Components\TextInput::make('phone')
+                        ->label('تلفن')
+                        ->tel()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('province')
-                        ->label('استان')
-                        ->maxLength(255),
-                    Forms\Components\Toggle::make('contact_phone')
-                        ->label('contact phone')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
@@ -96,19 +87,29 @@ class CompanyResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\Toggle::make('contact_person')
+                        ->label('contact person')
+                        ->default(false),
+                    Forms\Components\Toggle::make('contact_phone')
+                        ->label('contact phone')
+                        ->default(false),
+                    Forms\Components\TextInput::make('registration_number')
+                        ->label('شماره ثبت')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -151,7 +152,7 @@ class CompanyResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

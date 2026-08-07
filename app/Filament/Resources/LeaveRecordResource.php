@@ -37,22 +37,29 @@ class LeaveRecordResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('employee_id')
-                        ->label('کارمند')
-                        ->relationship(name: 'employee', titleAttribute: 'id')
+                    Forms\Components\Select::make('approved_by')
+                        ->label('تأییدکننده')
+                        ->relationship(name: 'approver', titleAttribute: 'id')
                         ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Select::make('approved_by')
-                        ->label('تأییدکننده')
-                        ->relationship(name: 'approver', titleAttribute: 'id')
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Select::make('employee_id')
+                        ->label('کارمند')
+                        ->relationship(name: 'employee', titleAttribute: 'id')
                         ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
@@ -66,35 +73,23 @@ class LeaveRecordResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('leave_type')
-                        ->label('نوع مرخصی')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
                         ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(2)
                 ->schema([
                     Forms\Components\DatePicker::make('start_date')
                         ->label('تاریخ شروع')
@@ -105,39 +100,41 @@ class LeaveRecordResource extends Resource
                     Forms\Components\DatePicker::make('approval_date')
                         ->label('approval date')
                         ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\Textarea::make('attachments')
+                        ->label('attachments')
+                        ->rows(3)
+                        ->columnSpanFull(),
                     Forms\Components\TextInput::make('days_count')
                         ->label('تعداد روز')
                         ->numeric()
                         ->maxLength(255),
-                    Forms\Components\Textarea::make('attachments')
-                        ->label('attachments')
+                    Forms\Components\Select::make('leave_type')
+                        ->label('نوع مرخصی')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Textarea::make('reason')
+                        ->label('دلیل')
                         ->rows(3)
                         ->columnSpanFull(),
                     Forms\Components\Toggle::make('substitution_arranged')
                         ->label('substitution arranged')
                         ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('reason')
-                        ->label('دلیل')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -162,12 +159,12 @@ class LeaveRecordResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('تاریخ شروع')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('end_date')
                     ->label('تاریخ پایان')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('days_count')
@@ -186,7 +183,7 @@ class LeaveRecordResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

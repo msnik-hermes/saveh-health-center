@@ -38,19 +38,14 @@ class UtilityPaymentLogResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('utility_id')
-                        ->label('utility')
-                        ->relationship(name: 'utility', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\CenterUtility $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ($record->code ?? null) ?: ($record->full_name ?? null) ?: ($record->id ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('bank_account_id')
                         ->label('bank account')
                         ->relationship(name: 'bankAccount', titleAttribute: 'id')
@@ -59,37 +54,17 @@ class UtilityPaymentLogResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('amount')
-                        ->label('مبلغ')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('tracking_number')
-                        ->label('tracking number')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('payment_method')
-                        ->label('روش پرداخت')
-                        ->maxLength(255),
-                    Forms\Components\Toggle::make('auto_paid')
-                        ->label('auto paid')
-                        ->default(false),
-                    Forms\Components\Textarea::make('response_data')
-                        ->label('response data')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                    Forms\Components\Select::make('utility_id')
+                        ->label('utility')
+                        ->relationship(name: 'utility', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\CenterUtility $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ($record->code ?? null) ?: ($record->full_name ?? null) ?: ($record->id ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
@@ -97,19 +72,41 @@ class UtilityPaymentLogResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('amount')
+                        ->label('مبلغ')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\Toggle::make('auto_paid')
+                        ->label('auto paid')
+                        ->default(false),
+                    Forms\Components\TextInput::make('payment_method')
+                        ->label('روش پرداخت')
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('response_data')
+                        ->label('response data')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('tracking_number')
+                        ->label('tracking number')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -155,7 +152,7 @@ class UtilityPaymentLogResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

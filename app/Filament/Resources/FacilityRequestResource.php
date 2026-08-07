@@ -38,27 +38,14 @@ class FacilityRequestResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('center_id')
-                        ->label('مرکز')
-                        ->relationship(name: 'center', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->required(),
-                    Forms\Components\Select::make('requested_by')
-                        ->label('درخواست‌کننده')
-                        ->relationship(name: 'requestedBy', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('assigned_to')
                         ->label('واگذار به')
                         ->relationship(name: 'assignedTo', titleAttribute: 'id')
@@ -67,18 +54,40 @@ class FacilityRequestResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
+                    Forms\Components\Select::make('center_id')
+                        ->label('مرکز')
+                        ->relationship(name: 'center', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->required(),
                     Forms\Components\TextInput::make('created_by')
                         ->label('ایجادکننده')
                         ->numeric()
                         ->maxLength(255),
+                    Forms\Components\Select::make('requested_by')
+                        ->label('درخواست‌کننده')
+                        ->relationship(name: 'requestedBy', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
+            Section::make('مکان و تماس')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('location')
+                        ->label('مکان')
+                        ->maxLength(255),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('facility_type')
                         ->label('نوع تاسیسات')
@@ -98,18 +107,31 @@ class FacilityRequestResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
+                ]),
+            Section::make('تاریخ‌ها')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
                 ->schema([
-                    Forms\Components\TextInput::make('location')
-                        ->label('مکان')
-                        ->maxLength(255),
-                ])
+                    Forms\Components\DateTimePicker::make('preferred_time')
+                        ->label('زمان ترجیحی')
+                        ->native(false)
+                        ->seconds(false),
+                    Forms\Components\DatePicker::make('completion_date')
+                        ->label('تاریخ تکمیل')
+                        ->native(false),
+                ]),
+            Section::make('مالی و مقادیر')
                 ->columns(2)
-                ->collapsible(),
+                ->schema([
+                    Forms\Components\Toggle::make('budget_approval')
+                        ->label('تأیید بودجه')
+                        ->default(false),
+                    Forms\Components\TextInput::make('cost')
+                        ->label('هزینه')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('description')
                         ->label('توضیحات')
@@ -119,43 +141,16 @@ class FacilityRequestResource extends Resource
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DateTimePicker::make('preferred_time')
-                        ->label('زمان ترجیحی')
-                        ->native(false)
-                        ->seconds(false),
-                    Forms\Components\DatePicker::make('completion_date')
-                        ->label('تاریخ تکمیل')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\Toggle::make('budget_approval')
-                        ->label('تأیید بودجه')
-                        ->default(false),
-                    Forms\Components\TextInput::make('cost')
-                        ->label('هزینه')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('images')
                         ->label('تصاویر')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -195,7 +190,7 @@ class FacilityRequestResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('preferred_time')
                     ->label('زمان ترجیحی')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\IconColumn::make('budget_approval')
@@ -204,7 +199,7 @@ class FacilityRequestResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

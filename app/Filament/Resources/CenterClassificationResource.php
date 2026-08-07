@@ -37,10 +37,13 @@ class CenterClassificationResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -58,27 +61,29 @@ class CenterClassificationResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('classification_type')
-                        ->label('classification type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('level')
                         ->label('سطح')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
+                ]),
+            Section::make('تاریخ‌ها')
                 ->columns(2)
-                ->collapsible(),
+                ->schema([
+                    Forms\Components\DatePicker::make('valid_from')
+                        ->label('valid from')
+                        ->native(false),
+                    Forms\Components\DatePicker::make('valid_to')
+                        ->label('valid to')
+                        ->native(false),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('description')
                         ->label('توضیحات')
@@ -88,21 +93,18 @@ class CenterClassificationResource extends Resource
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\DatePicker::make('valid_from')
-                        ->label('valid from')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('valid_to')
-                        ->label('valid to')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\Select::make('classification_type')
+                        ->label('classification type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -129,12 +131,12 @@ class CenterClassificationResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('valid_from')
                     ->label('valid from')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('valid_to')
                     ->label('valid to')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('notes')
@@ -148,7 +150,7 @@ class CenterClassificationResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

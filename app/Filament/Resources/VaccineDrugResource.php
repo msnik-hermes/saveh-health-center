@@ -36,115 +36,25 @@ class VaccineDrugResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\TextInput::make('name')
-                        ->label('نام')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('generic_name')
-                        ->label('generic name')
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('code')
                         ->label('کد')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('manufacturer')
-                        ->label('تولیدکننده')
+                    Forms\Components\TextInput::make('name')
+                        ->label('نام')
+                        ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('batch_number')
-                        ->label('شماره بچ')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('form')
-                        ->label('form')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('strength')
-                        ->label('strength')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('storage_temperature')
-                        ->label('storage temperature')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('type')
-                        ->label('نوع')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('category')
-                        ->label('دسته')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Toggle::make('is_controlled')
-                        ->label('is controlled')
-                        ->default(false),
-                    Forms\Components\Select::make('status')
-                        ->label('وضعیت')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DatePicker::make('expiry_date')
-                        ->label('تاریخ انقضا')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('unit_cost')
-                        ->label('unit cost')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('current_stock')
-                        ->label('current stock')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('minimum_stock')
-                        ->label('minimum stock')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('maximum_stock')
-                        ->label('maximum stock')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('storage_location')
-                        ->label('storage location')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\TextInput::make('created_by')
                         ->label('ایجادکننده')
@@ -154,10 +64,95 @@ class VaccineDrugResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
+                ]),
+            Section::make('وضعیت و نوع')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\Select::make('category')
+                        ->label('دسته')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('status')
+                        ->label('وضعیت')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('type')
+                        ->label('نوع')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\DatePicker::make('expiry_date')
+                        ->label('تاریخ انقضا')
+                        ->native(false),
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('unit_cost')
+                        ->label('unit cost')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('batch_number')
+                        ->label('شماره بچ')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('current_stock')
+                        ->label('current stock')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('form')
+                        ->label('form')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('generic_name')
+                        ->label('generic name')
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('is_controlled')
+                        ->label('is controlled')
+                        ->default(false),
+                    Forms\Components\TextInput::make('manufacturer')
+                        ->label('تولیدکننده')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('maximum_stock')
+                        ->label('maximum stock')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('minimum_stock')
+                        ->label('minimum stock')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('storage_location')
+                        ->label('storage location')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('storage_temperature')
+                        ->label('storage temperature')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('strength')
+                        ->label('strength')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -197,12 +192,12 @@ class VaccineDrugResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('expiry_date')
                     ->label('تاریخ انقضا')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

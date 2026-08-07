@@ -38,10 +38,13 @@ class TrainingServiceRecordResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -51,6 +54,10 @@ class TrainingServiceRecordResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
                     Forms\Components\Select::make('material_id')
                         ->label('material')
                         ->relationship(name: 'material', titleAttribute: 'id')
@@ -59,98 +66,82 @@ class TrainingServiceRecordResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
+            Section::make('مکان و تماس')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('location')
+                        ->label('مکان')
+                        ->maxLength(255),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(1)
                 ->schema([
                     Forms\Components\DatePicker::make('session_date')
                         ->label('session date')
                         ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('session_type')
-                        ->label('session type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
+                    Forms\Components\TextInput::make('cost')
+                        ->label('هزینه')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\TextInput::make('topic')
-                        ->label('topic')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('trainer')
-                        ->label('trainer')
-                        ->maxLength(255),
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\Textarea::make('attendance_list')
+                        ->label('attendance list')
+                        ->rows(3)
+                        ->columnSpanFull(),
                     Forms\Components\TextInput::make('duration_hours')
                         ->label('duration hours')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('evaluation_score')
+                        ->label('evaluation score')
                         ->numeric()
                         ->maxLength(255),
                     Forms\Components\TextInput::make('participants_count')
                         ->label('participants count')
                         ->numeric()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('unique_reached')
-                        ->label('unique reached')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\Textarea::make('attendance_list')
-                        ->label('attendance list')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\TextInput::make('evaluation_score')
-                        ->label('evaluation score')
-                        ->numeric()
-                        ->maxLength(255),
                     Forms\Components\Textarea::make('photos')
                         ->label('photos')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('location')
-                        ->label('مکان')
+                    Forms\Components\Select::make('session_type')
+                        ->label('session type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('topic')
+                        ->label('topic')
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('cost')
-                        ->label('هزینه')
+                    Forms\Components\TextInput::make('trainer')
+                        ->label('trainer')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('unique_reached')
+                        ->label('unique reached')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -171,7 +162,7 @@ class TrainingServiceRecordResource extends Resource
                     ->label('session date')
                     ->searchable()
                     ->sortable()
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('session_type')
@@ -194,7 +185,7 @@ class TrainingServiceRecordResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

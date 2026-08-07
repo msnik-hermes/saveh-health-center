@@ -38,19 +38,14 @@ class TrainingDistributionResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('material_id')
-                        ->label('material')
-                        ->relationship(name: 'material', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\TrainingMaterial $record) => (string) (($record->title ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
                         ->relationship(name: 'center', titleAttribute: 'id')
@@ -63,41 +58,54 @@ class TrainingDistributionResource extends Resource
                         ->label('ایجادکننده')
                         ->numeric()
                         ->maxLength(255),
+                    Forms\Components\Select::make('material_id')
+                        ->label('material')
+                        ->relationship(name: 'material', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\TrainingMaterial $record) => (string) (($record->title ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(1)
                 ->schema([
                     Forms\Components\DatePicker::make('distribution_date')
                         ->label('تاریخ توزیع')
                         ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
                 ->schema([
+                    Forms\Components\TextInput::make('quantity')
+                        ->label('تعداد')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('campaign')
+                        ->label('campaign')
+                        ->maxLength(255),
                     Forms\Components\TextInput::make('distribution_method')
                         ->label('distribution method')
                         ->maxLength(255),
                     Forms\Components\TextInput::make('distributor')
                         ->label('distributor')
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('target_group')
-                        ->label('target group')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('purpose')
-                        ->label('هدف')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('campaign')
-                        ->label('campaign')
-                        ->maxLength(255),
-                    Forms\Components\Toggle::make('recipient_ack')
-                        ->label('recipient ack')
-                        ->default(false),
                     Forms\Components\Textarea::make('feedback')
                         ->label('بازخورد')
                         ->rows(3)
@@ -106,28 +114,17 @@ class TrainingDistributionResource extends Resource
                         ->label('photos')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('quantity')
-                        ->label('تعداد')
-                        ->numeric()
+                    Forms\Components\TextInput::make('purpose')
+                        ->label('هدف')
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\Toggle::make('recipient_ack')
+                        ->label('recipient ack')
+                        ->default(false),
+                    Forms\Components\TextInput::make('target_group')
+                        ->label('target group')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -148,7 +145,7 @@ class TrainingDistributionResource extends Resource
                     ->label('تاریخ توزیع')
                     ->searchable()
                     ->sortable()
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('distribution_method')
@@ -171,7 +168,7 @@ class TrainingDistributionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

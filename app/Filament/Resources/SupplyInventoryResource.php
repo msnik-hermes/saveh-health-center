@@ -37,10 +37,13 @@ class SupplyInventoryResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -58,24 +61,9 @@ class SupplyInventoryResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('item_name')
-                        ->label('item name')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('unit')
-                        ->label('واحد')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('supplier')
-                        ->label('تأمین‌کننده')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('category')
                         ->label('دسته')
@@ -89,53 +77,56 @@ class SupplyInventoryResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('current_quantity')
-                        ->label('current quantity')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('minimum_quantity')
-                        ->label('minimum quantity')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('unit_cost')
-                        ->label('unit cost')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(1)
                 ->schema([
                     Forms\Components\DatePicker::make('last_restock_date')
                         ->label('last restock date')
                         ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\TextInput::make('storage_location')
-                        ->label('storage location')
+                    Forms\Components\TextInput::make('unit_cost')
+                        ->label('unit cost')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\TextInput::make('current_quantity')
+                        ->label('current quantity')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('item_name')
+                        ->label('item name')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('minimum_quantity')
+                        ->label('minimum quantity')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('storage_location')
+                        ->label('storage location')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('supplier')
+                        ->label('تأمین‌کننده')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('unit')
+                        ->label('واحد')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -175,12 +166,12 @@ class SupplyInventoryResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('last_restock_date')
                     ->label('last restock date')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

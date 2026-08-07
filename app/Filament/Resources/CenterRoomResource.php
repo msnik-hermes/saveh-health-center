@@ -37,10 +37,21 @@ class CenterRoomResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
+            Section::make('اطلاعات اصلی')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('نام')
+                        ->required()
+                        ->maxLength(255),
+                ]),
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -58,65 +69,55 @@ class CenterRoomResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
+                ]),
+            Section::make('مکان و تماس')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\TextInput::make('room_number')
-                        ->label('شماره اتاق')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('name')
-                        ->label('نام')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('floor')
-                        ->label('طبقه')
-                        ->numeric()
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('area_sqm')
                         ->label('مساحت (م²)')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('usage_type')
-                        ->label('usage type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
                         ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('capacity')
-                        ->label('ظرفیت')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\TextInput::make('capacity')
+                        ->label('ظرفیت')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('floor')
+                        ->label('طبقه')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('room_number')
+                        ->label('شماره اتاق')
+                        ->maxLength(255),
+                    Forms\Components\Select::make('usage_type')
+                        ->label('usage type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -159,7 +160,7 @@ class CenterRoomResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

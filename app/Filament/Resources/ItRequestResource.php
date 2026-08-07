@@ -39,35 +39,14 @@ class ItRequestResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('center_id')
-                        ->label('مرکز')
-                        ->relationship(name: 'center', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->required(),
-                    Forms\Components\Select::make('requested_by')
-                        ->label('درخواست‌کننده')
-                        ->relationship(name: 'requestedBy', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('equipment_id')
-                        ->label('equipment')
-                        ->relationship(name: 'equipment', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\CenterEquipment $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ($record->code ?? null) ?: ($record->full_name ?? null) ?: ($record->id ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('assigned_to')
                         ->label('واگذار به')
                         ->relationship(name: 'assignedTo', titleAttribute: 'id')
@@ -76,28 +55,51 @@ class ItRequestResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
+                    Forms\Components\Select::make('center_id')
+                        ->label('مرکز')
+                        ->relationship(name: 'center', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->required(),
                     Forms\Components\TextInput::make('created_by')
                         ->label('ایجادکننده')
                         ->numeric()
                         ->maxLength(255),
+                    Forms\Components\Select::make('equipment_id')
+                        ->label('equipment')
+                        ->relationship(name: 'equipment', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\CenterEquipment $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ($record->code ?? null) ?: ($record->full_name ?? null) ?: ($record->id ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('requested_by')
+                        ->label('درخواست‌کننده')
+                        ->relationship(name: 'requestedBy', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('service_type')
-                        ->label('نوع خدمت')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('priority')
                         ->label('اولویت')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'urgent' => 'فوری'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('service_type')
+                        ->label('نوع خدمت')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
@@ -107,51 +109,46 @@ class ItRequestResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Textarea::make('problem_description')
-                        ->label('problem description')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\Textarea::make('resolution_notes')
-                        ->label('resolution notes')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
+                    Forms\Components\DatePicker::make('completion_date')
+                        ->label('تاریخ تکمیل')
+                        ->native(false),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('error_messages')
                         ->label('error messages')
                         ->numeric()
                         ->maxLength(255),
-                    Forms\Components\Textarea::make('screenshots')
-                        ->label('screenshots')
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                    Forms\Components\Textarea::make('problem_description')
+                        ->label('problem description')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
                 ->schema([
                     Forms\Components\TextInput::make('available_time')
                         ->label('available time')
                         ->maxLength(255),
-                    Forms\Components\DatePicker::make('completion_date')
-                        ->label('تاریخ تکمیل')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\Textarea::make('resolution_notes')
+                        ->label('resolution notes')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('screenshots')
+                        ->label('screenshots')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -199,7 +196,7 @@ class ItRequestResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

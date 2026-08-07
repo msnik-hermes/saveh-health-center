@@ -39,15 +39,18 @@ class FormSubmissionResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('form_template_id')
-                        ->label('form template')
-                        ->relationship(name: 'formTemplate', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\FormTemplate $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ('#' . $record->getKey())))
+                    Forms\Components\Select::make('assigned_to')
+                        ->label('واگذار به')
+                        ->relationship(name: 'assignedTo', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -60,6 +63,67 @@ class FormSubmissionResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Select::make('form_template_id')
+                        ->label('form template')
+                        ->relationship(name: 'formTemplate', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\FormTemplate $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('updated_by')
+                        ->label('ویرایش‌کننده')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\Select::make('priority')
+                        ->label('اولویت')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'urgent' => 'فوری'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('status')
+                        ->label('وضعیت')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\DatePicker::make('completion_date')
+                        ->label('تاریخ تکمیل')
+                        ->native(false),
+                    Forms\Components\DatePicker::make('due_date')
+                        ->label('سررسید')
+                        ->native(false),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('assigned_department')
+                        ->label('assigned department')
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('attachments')
+                        ->label('attachments')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('completion_notes')
+                        ->label('completion notes')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('form_data')
+                        ->label('داده فرم')
+                        ->rows(3)
+                        ->columnSpanFull(),
                     Forms\Components\Select::make('submitted_by')
                         ->label('ارسال‌کننده')
                         ->relationship(name: 'submittedBy', titleAttribute: 'id')
@@ -68,83 +132,12 @@ class FormSubmissionResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Select::make('assigned_to')
-                        ->label('واگذار به')
-                        ->relationship(name: 'assignedTo', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('updated_by')
-                        ->label('ویرایش‌کننده')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\Textarea::make('form_data')
-                        ->label('داده فرم')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\TextInput::make('assigned_department')
-                        ->label('assigned department')
-                        ->maxLength(255),
-                    Forms\Components\Textarea::make('attachments')
-                        ->label('attachments')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('status')
-                        ->label('وضعیت')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('priority')
-                        ->label('اولویت')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'urgent' => 'فوری'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DatePicker::make('due_date')
-                        ->label('سررسید')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('completion_date')
-                        ->label('تاریخ تکمیل')
-                        ->native(false),
                     Forms\Components\Textarea::make('timeline')
                         ->label('timeline')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('completion_notes')
-                        ->label('completion notes')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -191,12 +184,12 @@ class FormSubmissionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('due_date')
                     ->label('سررسید')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

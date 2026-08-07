@@ -38,19 +38,14 @@ class VaccineDrugDistributionResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('vaccine_drug_id')
-                        ->label('vaccine drug')
-                        ->relationship(name: 'vaccineDrug', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\VaccineDrug $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
                         ->relationship(name: 'center', titleAttribute: 'id')
@@ -67,55 +62,17 @@ class VaccineDrugDistributionResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DatePicker::make('distribution_date')
-                        ->label('تاریخ توزیع')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('quantity_sent')
-                        ->label('quantity sent')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('quantity_received')
-                        ->label('quantity received')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\DatePicker::make('temperature_at_distribution')
-                        ->label('temperature at distribution')
-                        ->native(false),
-                    Forms\Components\TextInput::make('distributor_name')
-                        ->label('distributor name')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('recipient_name')
-                        ->label('recipient name')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('transport_method')
-                        ->label('transport method')
-                        ->maxLength(255),
-                    Forms\Components\Toggle::make('cold_chain_maintained')
-                        ->label('cold chain maintained')
-                        ->default(false),
-                    Forms\Components\Textarea::make('delivery_receipt')
-                        ->label('delivery receipt')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                    Forms\Components\Select::make('vaccine_drug_id')
+                        ->label('vaccine drug')
+                        ->relationship(name: 'vaccineDrug', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\VaccineDrug $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
@@ -123,19 +80,54 @@ class VaccineDrugDistributionResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\DatePicker::make('distribution_date')
+                        ->label('تاریخ توزیع')
+                        ->native(false),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\Toggle::make('cold_chain_maintained')
+                        ->label('cold chain maintained')
+                        ->default(false),
+                    Forms\Components\Textarea::make('delivery_receipt')
+                        ->label('delivery receipt')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('distributor_name')
+                        ->label('distributor name')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('quantity_received')
+                        ->label('quantity received')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('quantity_sent')
+                        ->label('quantity sent')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('recipient_name')
+                        ->label('recipient name')
+                        ->maxLength(255),
+                    Forms\Components\DatePicker::make('temperature_at_distribution')
+                        ->label('temperature at distribution')
+                        ->native(false),
+                    Forms\Components\TextInput::make('transport_method')
+                        ->label('transport method')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -160,7 +152,7 @@ class VaccineDrugDistributionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('distribution_date')
                     ->label('تاریخ توزیع')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('quantity_sent')
@@ -171,7 +163,7 @@ class VaccineDrugDistributionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('temperature_at_distribution')
                     ->label('temperature at distribution')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('distributor_name')
@@ -182,7 +174,7 @@ class VaccineDrugDistributionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

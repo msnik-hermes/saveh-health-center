@@ -36,10 +36,36 @@ class SystemAlertResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
-            Section::make('وضعیت و نوع')
+        return $schema
+            ->columns(1)
+            ->schema([
+            Section::make('اطلاعات اصلی')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('title')
+                        ->label('عنوان')
+                        ->required()
+                        ->maxLength(255),
+                ]),
+            Section::make('ارتباطات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('target_id')
+                        ->label('target')
+                        ->maxLength(255),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\DateTimePicker::make('resolved_at')
+                        ->label('حل شده در')
+                        ->native(false)
+                        ->seconds(false),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('alert_type')
                         ->label('نوع هشدار')
@@ -47,6 +73,21 @@ class SystemAlertResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
+                    Forms\Components\Toggle::make('is_read')
+                        ->label('خوانده شده')
+                        ->default(false),
+                    Forms\Components\TextInput::make('message')
+                        ->label('پیام')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('resolution_notes')
+                        ->label('resolution notes')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('resolved_by')
+                        ->label('resolved by')
+                        ->numeric()
+                        ->maxLength(255),
                     Forms\Components\Select::make('severity')
                         ->label('شدت')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
@@ -59,56 +100,8 @@ class SystemAlertResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Toggle::make('is_read')
-                        ->label('خوانده شده')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('ارتباطات')
-                ->schema([
-                    Forms\Components\TextInput::make('target_id')
-                        ->label('target')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('title')
-                        ->label('عنوان')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('message')
-                        ->label('پیام')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('resolved_by')
-                        ->label('resolved by')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DateTimePicker::make('resolved_at')
-                        ->label('حل شده در')
-                        ->native(false)
-                        ->seconds(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('resolution_notes')
-                        ->label('resolution notes')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -148,12 +141,12 @@ class SystemAlertResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('resolved_at')
                     ->label('حل شده در')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

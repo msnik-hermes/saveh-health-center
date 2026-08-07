@@ -36,10 +36,13 @@ class FormTemplateResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(2)
                 ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('نام')
@@ -48,8 +51,49 @@ class FormTemplateResource extends Resource
                     Forms\Components\TextInput::make('slug')
                         ->label('شناسه یکتا')
                         ->maxLength(255),
+                ]),
+            Section::make('ارتباطات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('updated_by')
+                        ->label('ویرایش‌کننده')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\Select::make('category')
+                        ->label('دسته')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('فعال')
+                        ->default(false),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('description')
+                        ->label('توضیحات')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
                     Forms\Components\Textarea::make('fields_schema')
                         ->label('fields schema')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\Textarea::make('target_center_types')
+                        ->label('target center types')
                         ->rows(3)
                         ->columnSpanFull(),
                     Forms\Components\Textarea::make('target_roles')
@@ -60,50 +104,8 @@ class FormTemplateResource extends Resource
                         ->label('نسخه')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('category')
-                        ->label('دسته')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Textarea::make('target_center_types')
-                        ->label('target center types')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\Toggle::make('is_active')
-                        ->label('فعال')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('description')
-                        ->label('توضیحات')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('ارتباطات')
-                ->schema([
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('updated_by')
-                        ->label('ویرایش‌کننده')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -144,7 +146,7 @@ class FormTemplateResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

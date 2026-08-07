@@ -38,23 +38,30 @@ class OrganizationalUnitResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
+            Section::make('اطلاعات اصلی')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('code')
+                        ->label('کد')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('name')
+                        ->label('نام')
+                        ->required()
+                        ->maxLength(255),
+                ]),
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
                         ->relationship(name: 'center', titleAttribute: 'id')
                         ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('parent_id')
-                        ->label('مرکز والد')
-                        ->relationship(name: 'parent', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\OrganizationalUnit $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -67,56 +74,25 @@ class OrganizationalUnitResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('code')
-                        ->label('کد')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('name')
-                        ->label('نام')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('name_en')
-                        ->label('name en')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('sort_order')
-                        ->label('ترتیب')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
+                    Forms\Components\Select::make('parent_id')
+                        ->label('مرکز والد')
+                        ->relationship(name: 'parent', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\OrganizationalUnit $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('مکان و تماس')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('phone')
                         ->label('تلفن')
                         ->tel()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\Toggle::make('budget_allocation')
-                        ->label('budget allocation')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('description')
-                        ->label('توضیحات')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
@@ -124,10 +100,30 @@ class OrganizationalUnitResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('description')
+                        ->label('توضیحات')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\Toggle::make('budget_allocation')
+                        ->label('budget allocation')
+                        ->default(false),
+                    Forms\Components\TextInput::make('name_en')
+                        ->label('name en')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('sort_order')
+                        ->label('ترتیب')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -177,7 +173,7 @@ class OrganizationalUnitResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

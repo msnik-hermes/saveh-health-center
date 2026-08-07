@@ -39,23 +39,34 @@ class VehicleTripResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('vehicle_id')
-                        ->label('خودرو')
-                        ->relationship(name: 'vehicle', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Vehicle $record) => (string) (($record->plate_number ?? null) ?: ($record->name ?? null) ?: ($record->model ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
                     Forms\Components\Select::make('driver_id')
                         ->label('راننده')
                         ->relationship(name: 'driver', titleAttribute: 'id')
                         ->getOptionLabelFromRecordUsing(fn (\App\Models\Driver $record) => (string) (($record->name ?? null) ?: ($record->employee_id ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('updated_by')
+                        ->label('ویرایش‌کننده')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Select::make('vehicle_id')
+                        ->label('خودرو')
+                        ->relationship(name: 'vehicle', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Vehicle $record) => (string) (($record->plate_number ?? null) ?: ($record->name ?? null) ?: ($record->model ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -68,34 +79,9 @@ class VehicleTripResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('updated_by')
-                        ->label('ویرایش‌کننده')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
+                ]),
+            Section::make('مکان و تماس')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DatePicker::make('trip_date')
-                        ->label('تاریخ سفر')
-                        ->native(false),
-                    Forms\Components\DateTimePicker::make('departure_time')
-                        ->label('departure time')
-                        ->native(false)
-                        ->seconds(false),
-                    Forms\Components\DateTimePicker::make('return_time')
-                        ->label('return time')
-                        ->native(false)
-                        ->seconds(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
                 ->schema([
                     Forms\Components\TextInput::make('origin')
                         ->label('مبدأ')
@@ -103,13 +89,44 @@ class VehicleTripResource extends Resource
                     Forms\Components\TextInput::make('destination')
                         ->label('مقصد')
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('route')
-                        ->label('route')
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('trip_purpose')
+                        ->label('trip purpose')
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('start_mileage')
-                        ->label('start mileage')
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\DatePicker::make('trip_date')
+                        ->label('تاریخ سفر')
+                        ->native(false),
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('fuel_cost')
+                        ->label('هزینه سوخت')
                         ->numeric()
                         ->maxLength(255),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\DateTimePicker::make('departure_time')
+                        ->label('departure time')
+                        ->native(false)
+                        ->seconds(false),
                     Forms\Components\TextInput::make('end_mileage')
                         ->label('end mileage')
                         ->numeric()
@@ -121,35 +138,23 @@ class VehicleTripResource extends Resource
                     Forms\Components\TextInput::make('passenger_list')
                         ->label('passenger list')
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('trip_purpose')
-                        ->label('trip purpose')
+                    Forms\Components\DateTimePicker::make('return_time')
+                        ->label('return time')
+                        ->native(false)
+                        ->seconds(false),
+                    Forms\Components\TextInput::make('route')
+                        ->label('route')
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
+                    Forms\Components\TextInput::make('start_mileage')
+                        ->label('start mileage')
+                        ->numeric()
+                        ->maxLength(255),
                     Forms\Components\TextInput::make('total_distance')
                         ->label('total distance')
                         ->numeric()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('fuel_cost')
-                        ->label('هزینه سوخت')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -173,17 +178,17 @@ class VehicleTripResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('trip_date')
                     ->label('تاریخ سفر')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('departure_time')
                     ->label('departure time')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('return_time')
                     ->label('return time')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('origin')
@@ -197,7 +202,7 @@ class VehicleTripResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

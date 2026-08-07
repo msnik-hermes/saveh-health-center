@@ -36,42 +36,37 @@ class AccessReportResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('user_id')
                         ->label('کاربر')
                         ->maxLength(255),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
                 ->schema([
+                    Forms\Components\Textarea::make('filters')
+                        ->label('filters')
+                        ->rows(3)
+                        ->columnSpanFull(),
                     Forms\Components\Select::make('report_type')
                         ->label('report type')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\Textarea::make('filters')
-                        ->label('filters')
-                        ->rows(3)
-                        ->columnSpanFull(),
                     Forms\Components\Textarea::make('results')
                         ->label('results')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -98,7 +93,7 @@ class AccessReportResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

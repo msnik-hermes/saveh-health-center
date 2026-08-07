@@ -36,21 +36,23 @@ class ManagerAccessLevelResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\TextInput::make('role_id')
-                        ->label('نقش')
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('access_level_id')
                         ->label('access level')
                         ->maxLength(255),
-                ])
+                    Forms\Components\TextInput::make('role_id')
+                        ->label('نقش')
+                        ->maxLength(255),
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
                 ->schema([
                     Forms\Components\Toggle::make('can_approve')
                         ->label('can approve')
@@ -61,10 +63,8 @@ class ManagerAccessLevelResource extends Resource
                     Forms\Components\Toggle::make('can_override')
                         ->label('can override')
                         ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -95,7 +95,7 @@ class ManagerAccessLevelResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

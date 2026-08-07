@@ -38,19 +38,14 @@ class UserPermissionResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('user_id')
-                        ->label('کاربر')
-                        ->relationship(name: 'user', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\User $record) => (string) (($record->name ?? null) ?: ($record->email ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('permission_id')
                         ->label('مجوز')
                         ->relationship(name: 'permission', titleAttribute: 'id')
@@ -59,6 +54,26 @@ class UserPermissionResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
+                    Forms\Components\Select::make('user_id')
+                        ->label('کاربر')
+                        ->relationship(name: 'user', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\User $record) => (string) (($record->name ?? null) ?: ($record->email ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\DateTimePicker::make('expires_at')
+                        ->label('انقضا')
+                        ->native(false)
+                        ->seconds(false),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
                     Forms\Components\Select::make('granted_by')
                         ->label('اعطاکننده')
                         ->relationship(name: 'grantedBy', titleAttribute: 'id')
@@ -67,36 +82,15 @@ class UserPermissionResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
                     Forms\Components\Toggle::make('is_granted')
                         ->label('اعطا شده')
                         ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DateTimePicker::make('expires_at')
-                        ->label('انقضا')
-                        ->native(false)
-                        ->seconds(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
                     Forms\Components\Textarea::make('reason')
                         ->label('دلیل')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -119,7 +113,7 @@ class UserPermissionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('expires_at')
                     ->label('انقضا')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('reason')
@@ -132,7 +126,7 @@ class UserPermissionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

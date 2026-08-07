@@ -36,45 +36,43 @@ class CenterTypeResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('نام')
                         ->required()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('فعال')
+                        ->default(false),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('description')
                         ->label('توضیحات')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('capacity')
                         ->label('ظرفیت')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Toggle::make('is_active')
-                        ->label('فعال')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table

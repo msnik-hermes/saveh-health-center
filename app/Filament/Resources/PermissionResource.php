@@ -36,10 +36,13 @@ class PermissionResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(2)
                 ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('نام')
@@ -48,25 +51,26 @@ class PermissionResource extends Resource
                     Forms\Components\TextInput::make('display_name')
                         ->label('نام نمایشی')
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('table_name')
-                        ->label('table name')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('action')
-                        ->label('اقدام')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('description')
                         ->label('توضیحات')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\TextInput::make('action')
+                        ->label('اقدام')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('table_name')
+                        ->label('table name')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -96,7 +100,7 @@ class PermissionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

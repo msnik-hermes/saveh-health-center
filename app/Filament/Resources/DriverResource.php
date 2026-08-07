@@ -38,19 +38,21 @@ class DriverResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
-            Section::make('ارتباطات')
+        return $schema
+            ->columns(1)
+            ->schema([
+            Section::make('اطلاعات اصلی')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('employee_id')
-                        ->label('کارمند')
-                        ->relationship(name: 'employee', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
+                    Forms\Components\TextInput::make('license_number')
+                        ->label('شماره مجوز')
+                        ->maxLength(255),
+                ]),
+            Section::make('ارتباطات')
+                ->columns(2)
+                ->schema([
                     Forms\Components\Select::make('assigned_vehicle_id')
                         ->label('assigned vehicle')
                         ->relationship(name: 'assignedVehicle', titleAttribute: 'id')
@@ -63,62 +65,61 @@ class DriverResource extends Resource
                         ->label('ایجادکننده')
                         ->numeric()
                         ->maxLength(255),
+                    Forms\Components\Select::make('employee_id')
+                        ->label('کارمند')
+                        ->relationship(name: 'employee', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('license_number')
-                        ->label('شماره مجوز')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('fuel_card_number')
-                        ->label('fuel card number')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('driving_record')
-                        ->label('driving record')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('license_type')
-                        ->label('license type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
                         ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(1)
                 ->schema([
                     Forms\Components\DatePicker::make('license_expiry')
                         ->label('انقضای مجوز')
                         ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\TextInput::make('driving_record')
+                        ->label('driving record')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('fuel_card_number')
+                        ->label('fuel card number')
+                        ->maxLength(255),
+                    Forms\Components\Select::make('license_type')
+                        ->label('license type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -146,7 +147,7 @@ class DriverResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('license_expiry')
                     ->label('انقضای مجوز')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('assignedVehicle.plate_number')
@@ -165,7 +166,7 @@ class DriverResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

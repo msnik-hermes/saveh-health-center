@@ -37,11 +37,17 @@ class CenterPhoneLineResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
+                    Forms\Components\TextInput::make('bill_id')
+                        ->label('bill')
+                        ->maxLength(255),
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
                         ->relationship(name: 'center', titleAttribute: 'id')
@@ -50,9 +56,6 @@ class CenterPhoneLineResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('bill_id')
-                        ->label('bill')
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('created_by')
                         ->label('ایجادکننده')
                         ->numeric()
@@ -61,40 +64,46 @@ class CenterPhoneLineResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('phone_number')
-                        ->label('phone number')
-                        ->tel()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('line_type')
-                        ->label('line type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
                         ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
+                ]),
+            Section::make('تاریخ‌ها')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
                 ->schema([
-                    Forms\Components\TextInput::make('provider')
-                        ->label('اپراتور')
+                    Forms\Components\DatePicker::make('start_date')
+                        ->label('تاریخ شروع')
+                        ->native(false),
+                    Forms\Components\DatePicker::make('end_date')
+                        ->label('تاریخ پایان')
+                        ->native(false),
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('monthly_cost')
+                        ->label('هزینه ماهانه')
+                        ->numeric()
                         ->maxLength(255),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
                     Forms\Components\TextInput::make('account_number')
                         ->label('شماره حساب')
                         ->numeric()
@@ -102,34 +111,21 @@ class CenterPhoneLineResource extends Resource
                     Forms\Components\TextInput::make('department')
                         ->label('بخش')
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\TextInput::make('monthly_cost')
-                        ->label('هزینه ماهانه')
-                        ->numeric()
+                    Forms\Components\Select::make('line_type')
+                        ->label('line type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('phone_number')
+                        ->label('phone number')
+                        ->tel()
                         ->maxLength(255),
-                    Forms\Components\DatePicker::make('start_date')
-                        ->label('تاریخ شروع')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('end_date')
-                        ->label('تاریخ پایان')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\TextInput::make('provider')
+                        ->label('اپراتور')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -172,7 +168,7 @@ class CenterPhoneLineResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

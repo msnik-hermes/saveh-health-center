@@ -36,10 +36,13 @@ class CenterResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(2)
                 ->schema([
                     Forms\Components\TextInput::make('code')
                         ->label('کد')
@@ -54,6 +57,82 @@ class CenterResource extends Resource
                         ->maxLength(255),
                     Forms\Components\TextInput::make('population_served')
                         ->label('جمعیت تحت پوشش')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('license_number')
+                        ->label('شماره مجوز')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('email')
+                        ->label('ایمیل')
+                        ->email()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('logo')
+                        ->label('لوگو')
+                        ->maxLength(255),
+                ]),
+            Section::make('ارتباطات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Select::make('parent_id')
+                        ->label('مرکز والد')
+                        ->relationship(name: 'parent', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('مکان و تماس')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('province')
+                        ->label('استان')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('city')
+                        ->label('شهر')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('district')
+                        ->label('منطقه')
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('address')
+                        ->label('آدرس')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('postal_code')
+                        ->label('کد پستی')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('gps_lat')
+                        ->label('عرض جغرافیایی')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('gps_lng')
+                        ->label('طول جغرافیایی')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('phone')
+                        ->label('تلفن')
+                        ->tel()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('fax')
+                        ->label('فکس')
+                        ->tel()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('website')
+                        ->label('وب‌سایت')
+                        ->maxLength(255),
+                    Forms\Components\DateTimePicker::make('working_hours_start')
+                        ->label('ساعت شروع')
+                        ->native(false)
+                        ->seconds(false),
+                    Forms\Components\DateTimePicker::make('working_hours_end')
+                        ->label('ساعت پایان')
+                        ->native(false)
+                        ->seconds(false),
+                    Forms\Components\TextInput::make('working_days')
+                        ->label('روزهای کاری')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('emergency_hours')
+                        ->label('ساعات اضطراری')
                         ->numeric()
                         ->maxLength(255),
                     Forms\Components\TextInput::make('area_sqm')
@@ -76,34 +155,30 @@ class CenterResource extends Resource
                         ->label('قدرت ژنراتور (کیلووات)')
                         ->numeric()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('license_number')
-                        ->label('شماره مجوز')
-                        ->maxLength(255),
-                    Forms\Components\DateTimePicker::make('working_hours_start')
-                        ->label('ساعت شروع')
-                        ->native(false)
-                        ->seconds(false),
-                    Forms\Components\DateTimePicker::make('working_hours_end')
-                        ->label('ساعت پایان')
-                        ->native(false)
-                        ->seconds(false),
-                    Forms\Components\TextInput::make('working_days')
-                        ->label('روزهای کاری')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('emergency_hours')
-                        ->label('ساعات اضطراری')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('logo')
-                        ->label('لوگو')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                    Forms\Components\Toggle::make('has_generator')
+                        ->label('ژنراتور')
+                        ->default(false),
+                    Forms\Components\Toggle::make('has_cctv')
+                        ->label('دوربین مداربسته')
+                        ->default(false),
+                    Forms\Components\Toggle::make('has_elevator')
+                        ->label('آسانسور')
+                        ->default(false),
+                    Forms\Components\Toggle::make('has_fire_system')
+                        ->label('سیستم آتش‌نشانی')
+                        ->default(false),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('type')
-                        ->label('نوع')
+                    Forms\Components\Select::make('accreditation_level')
+                        ->label('سطح اعتباربخشی')
+                        ->options(['yes' => 'بله', 'no' => 'خیر', 'unknown' => 'نامشخص', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('building_type')
+                        ->label('نوع ساختمان')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
@@ -120,117 +195,38 @@ class CenterResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Toggle::make('has_elevator')
-                        ->label('آسانسور')
-                        ->default(false),
-                    Forms\Components\Toggle::make('has_generator')
-                        ->label('ژنراتور')
-                        ->default(false),
-                    Forms\Components\Toggle::make('has_fire_system')
-                        ->label('سیستم آتش‌نشانی')
-                        ->default(false),
-                    Forms\Components\Toggle::make('has_cctv')
-                        ->label('دوربین مداربسته')
-                        ->default(false),
-                    Forms\Components\Select::make('building_type')
-                        ->label('نوع ساختمان')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
                         ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Select::make('accreditation_level')
-                        ->label('سطح اعتباربخشی')
-                        ->options(['yes' => 'بله', 'no' => 'خیر', 'unknown' => 'نامشخص', 'other' => 'سایر'])
+                    Forms\Components\Select::make('type')
+                        ->label('نوع')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('ارتباطات')
-                ->schema([
-                    Forms\Components\Select::make('parent_id')
-                        ->label('مرکز والد')
-                        ->relationship(name: 'parent', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('province')
-                        ->label('استان')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('city')
-                        ->label('شهر')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('district')
-                        ->label('منطقه')
-                        ->maxLength(255),
-                    Forms\Components\Textarea::make('address')
-                        ->label('آدرس')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\TextInput::make('postal_code')
-                        ->label('کد پستی')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('gps_lng')
-                        ->label('طول جغرافیایی')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('phone')
-                        ->label('تلفن')
-                        ->tel()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('fax')
-                        ->label('فکس')
-                        ->tel()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('email')
-                        ->label('ایمیل')
-                        ->email()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('website')
-                        ->label('وب‌سایت')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\TextInput::make('gps_lat')
-                        ->label('عرض جغرافیایی')
-                        ->numeric()
-                        ->maxLength(255),
                     Forms\Components\DatePicker::make('established_date')
                         ->label('تاریخ تأسیس')
                         ->native(false),
                     Forms\Components\DatePicker::make('license_expiry')
                         ->label('انقضای مجوز')
                         ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -275,7 +271,7 @@ class CenterResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

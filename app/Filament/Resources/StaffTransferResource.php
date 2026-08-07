@@ -38,11 +38,17 @@ class StaffTransferResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->maxLength(255),
                     Forms\Components\Select::make('employee_id')
                         ->label('کارمند')
                         ->relationship(name: 'employee', titleAttribute: 'id')
@@ -59,14 +65,6 @@ class StaffTransferResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Select::make('to_center_id')
-                        ->label('به مرکز')
-                        ->relationship(name: 'toCenter', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('requested_by')
                         ->label('درخواست‌کننده')
                         ->relationship(name: 'requestedBy', titleAttribute: 'id')
@@ -75,22 +73,57 @@ class StaffTransferResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->maxLength(255),
+                    Forms\Components\Select::make('to_center_id')
+                        ->label('به مرکز')
+                        ->relationship(name: 'toCenter', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
+                    Forms\Components\Select::make('status')
+                        ->label('وضعیت')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\DatePicker::make('execution_date')
+                        ->label('execution date')
+                        ->native(false),
+                    Forms\Components\DatePicker::make('request_date')
+                        ->label('تاریخ درخواست')
+                        ->native(false),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\Toggle::make('budget_confirmed')
+                        ->label('budget confirmed')
+                        ->default(false),
+                    Forms\Components\Toggle::make('council_confirmation')
+                        ->label('council confirmation')
+                        ->default(false),
                     Forms\Components\TextInput::make('from_department')
                         ->label('from department')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('to_department')
-                        ->label('to department')
                         ->maxLength(255),
                     Forms\Components\TextInput::make('gostaresh_review')
                         ->label('gostaresh review')
@@ -98,62 +131,21 @@ class StaffTransferResource extends Resource
                     Forms\Components\Toggle::make('health_deputy_approval')
                         ->label('health deputy approval')
                         ->default(false),
-                    Forms\Components\Toggle::make('council_confirmation')
-                        ->label('council confirmation')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
+                    Forms\Components\Textarea::make('reason')
+                        ->label('دلیل')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('to_department')
+                        ->label('to department')
+                        ->maxLength(255),
                     Forms\Components\Select::make('transfer_type')
                         ->label('transfer type')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Select::make('status')
-                        ->label('وضعیت')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('reason')
-                        ->label('دلیل')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DatePicker::make('request_date')
-                        ->label('تاریخ درخواست')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('execution_date')
-                        ->label('execution date')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\Toggle::make('budget_confirmed')
-                        ->label('budget confirmed')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -175,7 +167,7 @@ class StaffTransferResource extends Resource
                     ->label('تاریخ درخواست')
                     ->searchable()
                     ->sortable()
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('fromCenter.name')
@@ -202,7 +194,7 @@ class StaffTransferResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -38,23 +38,18 @@ class SecurityIncidentResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
                         ->relationship(name: 'center', titleAttribute: 'id')
                         ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('reported_by')
-                        ->label('گزارش‌دهنده')
-                        ->relationship(name: 'reportedBy', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -67,10 +62,26 @@ class SecurityIncidentResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
+            Section::make('مکان و تماس')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('location')
+                        ->label('مکان')
+                        ->maxLength(255),
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Select::make('status')
+                        ->label('وضعیت')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
             Section::make('تاریخ‌ها')
+                ->columns(2)
                 ->schema([
                     Forms\Components\DateTimePicker::make('incident_date')
                         ->label('تاریخ حادثه')
@@ -79,74 +90,9 @@ class SecurityIncidentResource extends Resource
                     Forms\Components\DatePicker::make('resolution_date')
                         ->label('resolution date')
                         ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('incident_type')
-                        ->label('نوع حادثه')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('severity')
-                        ->label('شدت')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('follow_up_status')
-                        ->label('وضعیت پیگیری')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('status')
-                        ->label('وضعیت')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('location')
-                        ->label('مکان')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('persons_involved')
-                        ->label('persons involved')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('witnesses')
-                        ->label('witnesses')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('immediate_actions')
-                        ->label('immediate actions')
-                        ->maxLength(255),
-                    Forms\Components\Textarea::make('evidence')
-                        ->label('evidence')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\TextInput::make('police_report_number')
-                        ->label('police report number')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('investigation_report')
-                        ->label('investigation report')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('corrective_actions')
-                        ->label('corrective actions')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('description')
                         ->label('توضیحات')
@@ -156,10 +102,60 @@ class SecurityIncidentResource extends Resource
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\TextInput::make('corrective_actions')
+                        ->label('corrective actions')
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('evidence')
+                        ->label('evidence')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\Select::make('follow_up_status')
+                        ->label('وضعیت پیگیری')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('immediate_actions')
+                        ->label('immediate actions')
+                        ->maxLength(255),
+                    Forms\Components\Select::make('incident_type')
+                        ->label('نوع حادثه')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('investigation_report')
+                        ->label('investigation report')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('persons_involved')
+                        ->label('persons involved')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('police_report_number')
+                        ->label('police report number')
+                        ->maxLength(255),
+                    Forms\Components\Select::make('reported_by')
+                        ->label('گزارش‌دهنده')
+                        ->relationship(name: 'reportedBy', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('severity')
+                        ->label('شدت')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('witnesses')
+                        ->label('witnesses')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -181,7 +177,7 @@ class SecurityIncidentResource extends Resource
                     ->label('تاریخ حادثه')
                     ->searchable()
                     ->sortable()
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('incident_type')
@@ -204,7 +200,7 @@ class SecurityIncidentResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

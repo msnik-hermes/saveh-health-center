@@ -38,74 +38,14 @@ class SimCardResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('phone_number')
-                        ->label('phone number')
-                        ->tel()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('operator')
-                        ->label('مجری')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('iccid')
-                        ->label('iccid')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('current_plan')
-                        ->label('current plan')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('card_type')
-                        ->label('card type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('status')
-                        ->label('وضعیت')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\TextInput::make('monthly_cost')
-                        ->label('هزینه ماهانه')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\DatePicker::make('activation_date')
-                        ->label('activation date')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('expiry_date')
-                        ->label('تاریخ انقضا')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('center_id')
-                        ->label('مرکز')
-                        ->relationship(name: 'center', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('assigned_to')
                         ->label('واگذار به')
                         ->relationship(name: 'assignedTo', titleAttribute: 'id')
@@ -114,19 +54,75 @@ class SimCardResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                ])
+                    Forms\Components\Select::make('center_id')
+                        ->label('مرکز')
+                        ->relationship(name: 'center', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Select::make('status')
+                        ->label('وضعیت')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('تاریخ‌ها')
                 ->columns(2)
-                ->collapsible(),
+                ->schema([
+                    Forms\Components\DatePicker::make('activation_date')
+                        ->label('activation date')
+                        ->native(false),
+                    Forms\Components\DatePicker::make('expiry_date')
+                        ->label('تاریخ انقضا')
+                        ->native(false),
+                ]),
+            Section::make('مالی و مقادیر')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('monthly_cost')
+                        ->label('هزینه ماهانه')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('notes')
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-        ]);
+                ->schema([
+                    Forms\Components\Select::make('card_type')
+                        ->label('card type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('current_plan')
+                        ->label('current plan')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('iccid')
+                        ->label('iccid')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('operator')
+                        ->label('مجری')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('phone_number')
+                        ->label('phone number')
+                        ->tel()
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -166,12 +162,12 @@ class SimCardResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('activation_date')
                     ->label('activation date')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

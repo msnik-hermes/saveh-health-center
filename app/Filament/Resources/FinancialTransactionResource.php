@@ -42,15 +42,18 @@ class FinancialTransactionResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('center_id')
-                        ->label('مرکز')
-                        ->relationship(name: 'center', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                    Forms\Components\Select::make('approved_by')
+                        ->label('تأییدکننده')
+                        ->relationship(name: 'approvedBy', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -66,22 +69,6 @@ class FinancialTransactionResource extends Resource
                     Forms\Components\TextInput::make('bill_id')
                         ->label('bill')
                         ->maxLength(255),
-                    Forms\Components\Select::make('utility_id')
-                        ->label('utility')
-                        ->relationship(name: 'utility', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\CenterUtility $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ($record->code ?? null) ?: ($record->full_name ?? null) ?: ($record->id ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\Select::make('form_submission_id')
-                        ->label('form submission')
-                        ->relationship(name: 'formSubmission', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\FormSubmission $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ($record->code ?? null) ?: ($record->full_name ?? null) ?: ($record->id ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('budget_id')
                         ->label('budget')
                         ->relationship(name: 'budget', titleAttribute: 'id')
@@ -90,10 +77,10 @@ class FinancialTransactionResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Select::make('approved_by')
-                        ->label('تأییدکننده')
-                        ->relationship(name: 'approvedBy', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                    Forms\Components\Select::make('center_id')
+                        ->label('مرکز')
+                        ->relationship(name: 'center', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -102,21 +89,30 @@ class FinancialTransactionResource extends Resource
                         ->label('ایجادکننده')
                         ->numeric()
                         ->maxLength(255),
+                    Forms\Components\Select::make('form_submission_id')
+                        ->label('form submission')
+                        ->relationship(name: 'formSubmission', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\FormSubmission $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ($record->code ?? null) ?: ($record->full_name ?? null) ?: ($record->id ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
-                ->schema([
-                    Forms\Components\Select::make('type')
-                        ->label('نوع')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                    Forms\Components\Select::make('utility_id')
+                        ->label('utility')
+                        ->relationship(name: 'utility', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\CenterUtility $record) => (string) (($record->name ?? null) ?: ($record->title ?? null) ?: ($record->code ?? null) ?: ($record->full_name ?? null) ?: ($record->id ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
+                        ->preload()
                         ->native(false)
                         ->nullable(),
+                ]),
+            Section::make('وضعیت و نوع')
+                ->columns(2)
+                ->schema([
                     Forms\Components\Select::make('category')
                         ->label('دسته')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
@@ -129,19 +125,33 @@ class FinancialTransactionResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
+                    Forms\Components\Select::make('type')
+                        ->label('نوع')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            Section::make('تاریخ‌ها')
                 ->columns(2)
-                ->collapsible(),
+                ->schema([
+                    Forms\Components\DatePicker::make('approval_date')
+                        ->label('approval date')
+                        ->native(false),
+                    Forms\Components\DatePicker::make('transaction_date')
+                        ->label('transaction date')
+                        ->native(false),
+                ]),
             Section::make('مالی و مقادیر')
+                ->columns(1)
                 ->schema([
                     Forms\Components\TextInput::make('amount')
                         ->label('مبلغ')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Textarea::make('description')
                         ->label('توضیحات')
@@ -151,14 +161,14 @@ class FinancialTransactionResource extends Resource
                         ->label('یادداشت')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
                 ->schema([
-                    Forms\Components\TextInput::make('reference_number')
-                        ->label('reference number')
-                        ->maxLength(255),
+                    Forms\Components\Textarea::make('attachments')
+                        ->label('attachments')
+                        ->rows(3)
+                        ->columnSpanFull(),
                     Forms\Components\TextInput::make('invoice_number')
                         ->label('شماره فاکتور')
                         ->maxLength(255),
@@ -168,25 +178,11 @@ class FinancialTransactionResource extends Resource
                     Forms\Components\TextInput::make('payment_method')
                         ->label('روش پرداخت')
                         ->maxLength(255),
-                    Forms\Components\Textarea::make('attachments')
-                        ->label('attachments')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DatePicker::make('transaction_date')
-                        ->label('transaction date')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('approval_date')
-                        ->label('approval date')
-                        ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\TextInput::make('reference_number')
+                        ->label('reference number')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -231,7 +227,7 @@ class FinancialTransactionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

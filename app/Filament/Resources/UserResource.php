@@ -38,35 +38,25 @@ class UserResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('اطلاعات اصلی')
+                ->columns(2)
                 ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('نام')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('password')
-                        ->label('رمز عبور')
-                        ->password()
-                        ->revealable()
-                        ->dehydrated(fn ($state) => filled($state))
-                        ->required(fn (string $operation) => $operation === 'create')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
                     Forms\Components\TextInput::make('email')
                         ->label('ایمیل')
                         ->email()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -84,18 +74,26 @@ class UserResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
                     Forms\Components\Toggle::make('is_active')
                         ->label('فعال')
                         ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('password')
+                        ->label('رمز عبور')
+                        ->password()
+                        ->revealable()
+                        ->dehydrated(fn ($state) => filled($state))
+                        ->required(fn (string $operation) => $operation === 'create')
+                        ->maxLength(255),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -129,7 +127,7 @@ class UserResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

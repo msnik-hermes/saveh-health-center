@@ -37,11 +37,18 @@ class PerformanceEvaluationResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
                     Forms\Components\Select::make('employee_id')
                         ->label('کارمند')
                         ->relationship(name: 'employee', titleAttribute: 'id')
@@ -58,115 +65,101 @@ class PerformanceEvaluationResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('evaluation_period')
-                        ->label('دوره ارزیابی')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('self_score')
-                        ->label('self score')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('supervisor_score')
-                        ->label('supervisor score')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('peer_score')
-                        ->label('peer score')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('overall_score')
-                        ->label('امتیاز کل')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('job_knowledge')
-                        ->label('job knowledge')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('quality_of_work')
-                        ->label('quality of work')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('punctuality')
-                        ->label('punctuality')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('teamwork')
-                        ->label('teamwork')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('initiative')
-                        ->label('initiative')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\Textarea::make('strengths')
-                        ->label('نقاط قوت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Forms\Components\TextInput::make('improvement_areas')
-                        ->label('improvement areas')
-                        ->maxLength(255),
-                    Forms\Components\Toggle::make('promotion_recommendation')
-                        ->label('promotion recommendation')
-                        ->default(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('evaluation_type')
-                        ->label('evaluation type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('status')
                         ->label('وضعیت')
                         ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
-                    Forms\Components\TextInput::make('quantity_of_work')
-                        ->label('quantity of work')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
             Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('comments')
+                        ->label('comments')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Textarea::make('development_goals')
                         ->label('development goals')
                         ->rows(3)
                         ->columnSpanFull(),
+                    Forms\Components\TextInput::make('evaluation_period')
+                        ->label('دوره ارزیابی')
+                        ->maxLength(255),
+                    Forms\Components\Select::make('evaluation_type')
+                        ->label('evaluation type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('improvement_areas')
+                        ->label('improvement areas')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('initiative')
+                        ->label('initiative')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('job_knowledge')
+                        ->label('job knowledge')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('overall_score')
+                        ->label('امتیاز کل')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('peer_score')
+                        ->label('peer score')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('promotion_recommendation')
+                        ->label('promotion recommendation')
+                        ->default(false),
+                    Forms\Components\TextInput::make('punctuality')
+                        ->label('punctuality')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('quality_of_work')
+                        ->label('quality of work')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('quantity_of_work')
+                        ->label('quantity of work')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('self_score')
+                        ->label('self score')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Textarea::make('strengths')
+                        ->label('نقاط قوت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Forms\Components\TextInput::make('supervisor_score')
+                        ->label('supervisor score')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('teamwork')
+                        ->label('teamwork')
+                        ->numeric()
+                        ->maxLength(255),
                     Forms\Components\Textarea::make('training_recommendations')
                         ->label('training recommendations')
                         ->rows(3)
                         ->columnSpanFull(),
-                    Forms\Components\Textarea::make('comments')
-                        ->label('comments')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -211,7 +204,7 @@ class PerformanceEvaluationResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

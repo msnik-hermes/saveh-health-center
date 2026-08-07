@@ -37,10 +37,13 @@ class BudgetResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
@@ -58,29 +61,28 @@ class BudgetResource extends Resource
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
+                ]),
+            Section::make('وضعیت و نوع')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
                 ->schema([
-                    Forms\Components\TextInput::make('fiscal_year')
-                        ->label('fiscal year')
-                        ->numeric()
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                    Forms\Components\Select::make('category')
+                        ->label('دسته')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('status')
+                        ->label('وضعیت')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
             Section::make('مالی و مقادیر')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Toggle::make('budget_code')
-                        ->label('budget code')
-                        ->default(false),
                     Forms\Components\TextInput::make('allocated_amount')
                         ->label('allocated amount')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('spent_amount')
-                        ->label('spent amount')
                         ->numeric()
                         ->maxLength(255),
                     Forms\Components\TextInput::make('committed_amount')
@@ -91,65 +93,50 @@ class BudgetResource extends Resource
                         ->label('remaining amount')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
+                    Forms\Components\TextInput::make('spent_amount')
+                        ->label('spent amount')
+                        ->numeric()
+                        ->maxLength(255),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
                 ->schema([
-                    Forms\Components\Select::make('category')
-                        ->label('دسته')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('approval_authority')
+                        ->label('approval authority')
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('budget_code')
+                        ->label('budget code')
+                        ->default(false),
+                    Forms\Components\TextInput::make('fiscal_year')
+                        ->label('fiscal year')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('justification')
+                        ->label('justification')
+                        ->maxLength(255),
                     Forms\Components\Select::make('sub_category')
                         ->label('sub category')
                         ->options(['yes' => 'بله', 'no' => 'خیر', 'unknown' => 'نامشخص', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Select::make('status')
-                        ->label('وضعیت')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
                     Forms\Components\TextInput::make('unit_allocation')
                         ->label('unit allocation')
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
                     Forms\Components\TextInput::make('utilization_pct')
                         ->label('utilization pct')
                         ->numeric()
                         ->maxLength(255),
-                    Forms\Components\TextInput::make('justification')
-                        ->label('justification')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('approval_authority')
-                        ->label('approval authority')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -193,7 +180,7 @@ class BudgetResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

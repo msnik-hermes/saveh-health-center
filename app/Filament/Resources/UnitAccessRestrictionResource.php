@@ -39,23 +39,26 @@ class UnitAccessRestrictionResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
-                    Forms\Components\Select::make('unit_id')
-                        ->label('واحد')
-                        ->relationship(name: 'unit', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\OrganizationalUnit $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
                     Forms\Components\Select::make('role_id')
                         ->label('نقش')
                         ->relationship(name: 'role', titleAttribute: 'id')
                         ->getOptionLabelFromRecordUsing(fn (\App\Models\Role $record) => (string) (($record->display_name ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\Select::make('unit_id')
+                        ->label('واحد')
+                        ->relationship(name: 'unit', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\OrganizationalUnit $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -68,31 +71,28 @@ class UnitAccessRestrictionResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                ])
+                ]),
+            Section::make('سایر اطلاعات')
                 ->columns(2)
-                ->collapsible(),
-            Section::make('وضعیت و نوع')
                 ->schema([
-                    Forms\Components\Select::make('restriction_type')
-                        ->label('restriction type')
-                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
+                    Forms\Components\Textarea::make('conditions')
+                        ->label('conditions')
+                        ->rows(3)
+                        ->columnSpanFull(),
                     Forms\Components\Select::make('resource_type')
                         ->label('resource type')
                         ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
                         ->searchable()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Textarea::make('conditions')
-                        ->label('conditions')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\Select::make('restriction_type')
+                        ->label('restriction type')
+                        ->options(['low' => 'کم', 'medium' => 'متوسط', 'high' => 'بالا', 'critical' => 'بحرانی', 'general' => 'عمومی', 'special' => 'تخصصی', 'other' => 'سایر'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -125,7 +125,7 @@ class UnitAccessRestrictionResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

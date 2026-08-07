@@ -39,15 +39,44 @@ class CenterEquipmentResource extends Resource
         return true;
     }
 
-    public static function form(Schema $schema): Schema
+                public static function form(Schema $schema): Schema
     {
-        return $schema->schema([
+        return $schema
+            ->columns(1)
+            ->schema([
+            Section::make('اطلاعات اصلی')
+                ->columns(2)
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('نام')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('model')
+                        ->label('مدل')
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('serial_number')
+                        ->label('شماره سریال')
+                        ->maxLength(255),
+                ]),
             Section::make('ارتباطات')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('center_id')
                         ->label('مرکز')
                         ->relationship(name: 'center', titleAttribute: 'id')
                         ->getOptionLabelFromRecordUsing(fn (\App\Models\Center $record) => (string) (($record->name ?? null) ?: ($record->code ?? null) ?: ('#' . $record->getKey())))
+                        ->searchable()
+                        ->preload()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\TextInput::make('created_by')
+                        ->label('ایجادکننده')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\Select::make('custodian_id')
+                        ->label('تحویل‌گیرنده')
+                        ->relationship(name: 'custodian', titleAttribute: 'id')
+                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
                         ->searchable()
                         ->preload()
                         ->native(false)
@@ -60,26 +89,20 @@ class CenterEquipmentResource extends Resource
                         ->preload()
                         ->native(false)
                         ->nullable(),
-                    Forms\Components\Select::make('custodian_id')
-                        ->label('تحویل‌گیرنده')
-                        ->relationship(name: 'custodian', titleAttribute: 'id')
-                        ->getOptionLabelFromRecordUsing(fn (\App\Models\Employee $record) => (string) (($record->first_name ?? null) ?: ($record->last_name ?? null) ?: ($record->personnel_code ?? null) ?: ($record->name ?? null) ?: ('#' . $record->getKey())))
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->nullable(),
-                    Forms\Components\TextInput::make('created_by')
-                        ->label('ایجادکننده')
-                        ->numeric()
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('updated_by')
                         ->label('ویرایش‌کننده')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
+                ]),
+            Section::make('مکان و تماس')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\TextInput::make('location')
+                        ->label('مکان')
+                        ->maxLength(255),
+                ]),
             Section::make('وضعیت و نوع')
+                ->columns(2)
                 ->schema([
                     Forms\Components\Select::make('category')
                         ->label('دسته')
@@ -93,93 +116,65 @@ class CenterEquipmentResource extends Resource
                         ->searchable()
                         ->native(false)
                         ->nullable(),
+                ]),
+            Section::make('تاریخ‌ها')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\DatePicker::make('purchase_date')
+                        ->label('تاریخ خرید')
+                        ->native(false),
+                ]),
+            Section::make('توضیحات')
+                ->columns(1)
+                ->schema([
+                    Forms\Components\Textarea::make('notes')
+                        ->label('یادداشت')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ]),
+            Section::make('سایر اطلاعات')
+                ->columns(2)
+                ->schema([
                     Forms\Components\TextInput::make('condition_rating')
                         ->label('condition rating')
                         ->numeric()
                         ->maxLength(255),
-                    Forms\Components\Select::make('insurance_status')
-                        ->label('insurance status')
-                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
-                        ->searchable()
-                        ->native(false)
-                        ->nullable(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات اصلی')
-                ->schema([
-                    Forms\Components\TextInput::make('name')
-                        ->label('نام')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('model')
-                        ->label('مدل')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('manufacturer')
-                        ->label('تولیدکننده')
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('serial_number')
-                        ->label('شماره سریال')
-                        ->maxLength(255),
                     Forms\Components\TextInput::make('depreciation_value')
                         ->label('depreciation value')
-                        ->numeric()
-                        ->maxLength(255),
-                    Forms\Components\DatePicker::make('warranty_end')
-                        ->label('warranty end')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('last_maintenance')
-                        ->label('last maintenance')
-                        ->native(false),
-                    Forms\Components\DatePicker::make('next_maintenance')
-                        ->label('سرویس بعدی')
-                        ->native(false),
-                    Forms\Components\TextInput::make('maintenance_interval')
-                        ->label('maintenance interval')
                         ->numeric()
                         ->maxLength(255),
                     Forms\Components\Textarea::make('documents')
                         ->label('documents')
                         ->rows(3)
                         ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('تاریخ‌ها')
-                ->schema([
-                    Forms\Components\DatePicker::make('purchase_date')
-                        ->label('تاریخ خرید')
+                    Forms\Components\Select::make('insurance_status')
+                        ->label('insurance status')
+                        ->options(['active' => 'فعال', 'inactive' => 'غیرفعال', 'pending' => 'در انتظار', 'approved' => 'تأیید شده', 'rejected' => 'رد شده', 'completed' => 'تکمیل شده', 'cancelled' => 'لغو شده', 'draft' => 'پیش‌نویس', 'open' => 'باز', 'closed' => 'بسته', 'in_progress' => 'در حال انجام', 'suspended' => 'معلق', 'resolved' => 'حل‌شده', 'failed' => 'ناموفق'])
+                        ->searchable()
+                        ->native(false)
+                        ->nullable(),
+                    Forms\Components\DatePicker::make('last_maintenance')
+                        ->label('last maintenance')
                         ->native(false),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('مالی و مقادیر')
-                ->schema([
+                    Forms\Components\TextInput::make('maintenance_interval')
+                        ->label('maintenance interval')
+                        ->numeric()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('manufacturer')
+                        ->label('تولیدکننده')
+                        ->maxLength(255),
+                    Forms\Components\DatePicker::make('next_maintenance')
+                        ->label('سرویس بعدی')
+                        ->native(false),
                     Forms\Components\TextInput::make('purchase_price')
                         ->label('purchase price')
                         ->numeric()
                         ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('اطلاعات تماس و مکان')
-                ->schema([
-                    Forms\Components\TextInput::make('location')
-                        ->label('مکان')
-                        ->maxLength(255),
-                ])
-                ->columns(2)
-                ->collapsible(),
-            Section::make('توضیحات')
-                ->schema([
-                    Forms\Components\Textarea::make('notes')
-                        ->label('یادداشت')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                ])
-                ->columns(2)
-                ->collapsible(),
-        ]);
+                    Forms\Components\DatePicker::make('warranty_end')
+                        ->label('warranty end')
+                        ->native(false),
+                ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -216,7 +211,7 @@ class CenterEquipmentResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('purchase_date')
                     ->label('تاریخ خرید')
-                    ->date()
+                    ->jalaliDate()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('purchase_price')
@@ -224,7 +219,7 @@ class CenterEquipmentResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('ایجاد')
-                    ->dateTime()
+                    ->jalaliDateTime()
                     ->since()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

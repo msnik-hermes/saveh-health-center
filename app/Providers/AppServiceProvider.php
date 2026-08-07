@@ -15,6 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        require_once app_path('Helpers/persian.php');
+
         $this->app->bind(
             \Filament\Auth\Http\Responses\Contracts\LogoutResponse::class,
             \App\Auth\Http\Responses\LogoutResponse::class,
